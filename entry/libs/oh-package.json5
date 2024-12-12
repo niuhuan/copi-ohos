@@ -1,0 +1,6 @@
+{
+  "name": "libcopi_rust.so",
+  "version": "1.0.0",
+  "description": "Rust implementation of libcopi_rust",
+  "main": "libcopi_rust.so"
+}

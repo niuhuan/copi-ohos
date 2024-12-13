@@ -8,12 +8,14 @@ use crate::database::active::comic_view_log;
 use crate::database::download::download_comic_page::Model;
 use crate::utils::join_paths;
 use crate::{downloading, get_image_cache_dir};
+use napi_derive_ohos::napi;
 use serde_derive::{Deserialize, Serialize};
 
 //////////////////////////////////////
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIViewLog {
+pub struct UiViewLog {
     pub comic_path_word: String,
     pub comic_name: String,
     pub comic_authors: String,
@@ -27,7 +29,7 @@ pub struct UIViewLog {
     pub view_time: i64,
 }
 
-impl From<comic_view_log::Model> for UIViewLog {
+impl From<comic_view_log::Model> for UiViewLog {
     fn from(model: comic_view_log::Model) -> Self {
         Self {
             comic_path_word: model.comic_path_word,
@@ -47,18 +49,19 @@ impl From<comic_view_log::Model> for UIViewLog {
 
 //////////////////////////////////////
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIPageRankItem {
-    pub list: Vec<UIRankItem>,
+pub struct UiPageRankItem {
+    pub list: Vec<UiRankItem>,
     pub total: i64,
     pub limit: i64,
     pub offset: i64,
 }
 
-impl From<Page<RankItem>> for UIPageRankItem {
+impl From<Page<RankItem>> for UiPageRankItem {
     fn from(page: Page<RankItem>) -> Self {
         Self {
-            list: page.list.into_iter().map(|x| UIRankItem::from(x)).collect(),
+            list: page.list.into_iter().map(|x| UiRankItem::from(x)).collect(),
             total: page.total,
             limit: page.limit,
             offset: page.offset,
@@ -66,9 +69,10 @@ impl From<Page<RankItem>> for UIPageRankItem {
     }
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIRankItem {
-    pub comic: UIComicInList,
+pub struct UiRankItem {
+    pub comic: UiComicInList,
     pub date_type: i64,
     pub popular: i64,
     pub rise_num: i64,
@@ -77,10 +81,10 @@ pub struct UIRankItem {
     pub sort_last: i64,
 }
 
-impl From<RankItem> for UIRankItem {
+impl From<RankItem> for UiRankItem {
     fn from(item: RankItem) -> Self {
         Self {
-            comic: UIComicInList::from(item.comic),
+            comic: UiComicInList::from(item.comic),
             date_type: item.date_type,
             popular: item.popular,
             rise_num: item.rise_num,
@@ -90,9 +94,9 @@ impl From<RankItem> for UIRankItem {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIComicInList {
+pub struct UiComicInList {
     pub author: Vec<Author>,
     pub cover: String,
     pub img_type: i64,
@@ -103,7 +107,7 @@ pub struct UIComicInList {
     pub males: Vec<SexualOrientation>,
 }
 
-impl From<ComicInList> for UIComicInList {
+impl From<ComicInList> for UiComicInList {
     fn from(comic: ComicInList) -> Self {
         Self {
             author: comic.author,
@@ -118,7 +122,7 @@ impl From<ComicInList> for UIComicInList {
     }
 }
 
-impl From<ComicInSearch> for UIComicInList {
+impl From<ComicInSearch> for UiComicInList {
     fn from(comic: ComicInSearch) -> Self {
         Self {
             author: comic.author,
@@ -132,10 +136,10 @@ impl From<ComicInSearch> for UIComicInList {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIComicData {
-    pub comic: UIComic,
+pub struct UiComicData {
+    pub comic: UiComic,
     pub groups: Vec<Group>,
     pub is_lock: bool,
     pub is_login: bool,
@@ -144,10 +148,10 @@ pub struct UIComicData {
     pub popular: i64,
 }
 
-impl From<ComicData> for UIComicData {
+impl From<ComicData> for UiComicData {
     fn from(comic: ComicData) -> Self {
         Self {
-            comic: UIComic::from(comic.comic),
+            comic: UiComic::from(comic.comic),
             groups: comic.groups.into_iter().map(|(_, v)| v).collect(),
             is_lock: comic.is_lock,
             is_login: comic.is_login,
@@ -157,9 +161,9 @@ impl From<ComicData> for UIComicData {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIComic {
+pub struct UiComic {
     pub alias: Option<String>,
     pub author: Vec<Author>,
     pub b_404: bool,
@@ -187,7 +191,7 @@ pub struct UIComic {
     pub males: Vec<SexualOrientation>,
 }
 
-impl From<Comic> for UIComic {
+impl From<Comic> for UiComic {
     fn from(comic: Comic) -> Self {
         Self {
             alias: comic.alias,
@@ -218,9 +222,9 @@ impl From<Comic> for UIComic {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UICacheImage {
+pub struct UiCacheImage {
     pub abs_path: String,
     pub cache_key: String,
     pub cache_time: i64,
@@ -235,7 +239,7 @@ pub struct UICacheImage {
     pub image_height: u32,
 }
 
-impl From<crate::database::cache::image_cache::Model> for UICacheImage {
+impl From<crate::database::cache::image_cache::Model> for UiCacheImage {
     fn from(model: crate::database::cache::image_cache::Model) -> Self {
         Self {
             abs_path: join_paths(vec![
@@ -257,7 +261,7 @@ impl From<crate::database::cache::image_cache::Model> for UICacheImage {
     }
 }
 
-impl From<crate::database::download::download_comic_page::Model> for UICacheImage {
+impl From<crate::database::download::download_comic_page::Model> for UiCacheImage {
     fn from(model: Model) -> Self {
         Self {
             abs_path: downloading::get_image_path(&model),
@@ -277,7 +281,7 @@ impl From<crate::database::download::download_comic_page::Model> for UICacheImag
 }
 
 // form cover
-impl From<crate::database::download::download_comic::Model> for UICacheImage {
+impl From<crate::database::download::download_comic::Model> for UiCacheImage {
     fn from(model: crate::database::download::download_comic::Model) -> Self {
         Self {
             abs_path: downloading::get_cover_path(&model),
@@ -295,22 +299,22 @@ impl From<crate::database::download::download_comic::Model> for UICacheImage {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIPageComicChapter {
-    pub list: Vec<UIComicChapter>,
+pub struct UiPageComicChapter {
+    pub list: Vec<UiComicChapter>,
     pub total: i64,
     pub limit: i64,
     pub offset: i64,
 }
 
-impl From<Page<ComicChapter>> for UIPageComicChapter {
+impl From<Page<ComicChapter>> for UiPageComicChapter {
     fn from(page: Page<ComicChapter>) -> Self {
         Self {
             list: page
                 .list
                 .into_iter()
-                .map(|x| UIComicChapter::from(x))
+                .map(|x| UiComicChapter::from(x))
                 .collect(),
             total: page.total,
             limit: page.limit,
@@ -318,9 +322,9 @@ impl From<Page<ComicChapter>> for UIPageComicChapter {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIComicChapter {
+pub struct UiComicChapter {
     pub comic_id: String,
     pub comic_path_word: String,
     pub count: i64,
@@ -339,7 +343,7 @@ pub struct UIComicChapter {
     pub uuid: String,
 }
 
-impl From<ComicChapter> for UIComicChapter {
+impl From<ComicChapter> for UiComicChapter {
     fn from(chapter: ComicChapter) -> Self {
         Self {
             comic_id: chapter.comic_id,
@@ -360,9 +364,9 @@ impl From<ComicChapter> for UIComicChapter {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIComicQuery {
+pub struct UiComicQuery {
     pub browse: Option<Browse>,
     pub collect: Option<i64>,
     pub is_lock: bool,
@@ -371,7 +375,7 @@ pub struct UIComicQuery {
     pub is_vip: bool,
 }
 
-impl From<crate::copy_client::ComicQuery> for UIComicQuery {
+impl From<crate::copy_client::ComicQuery> for UiComicQuery {
     fn from(query: crate::copy_client::ComicQuery) -> Self {
         Self {
             browse: query.browse,
@@ -383,10 +387,10 @@ impl From<crate::copy_client::ComicQuery> for UIComicQuery {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIChapterData {
-    pub chapter: UIChapterAndContents,
+pub struct UiChapterData {
+    pub chapter: UiChapterAndContents,
     pub comic: ChapterComicInfo,
     pub is_lock: bool,
     pub is_login: bool,
@@ -395,10 +399,10 @@ pub struct UIChapterData {
     pub show_app: bool,
 }
 
-impl From<ChapterData> for UIChapterData {
+impl From<ChapterData> for UiChapterData {
     fn from(value: ChapterData) -> Self {
         Self {
-            chapter: UIChapterAndContents::from(value.chapter),
+            chapter: UiChapterAndContents::from(value.chapter),
             comic: value.comic,
             is_lock: value.is_lock,
             is_login: value.is_login,
@@ -408,9 +412,9 @@ impl From<ChapterData> for UIChapterData {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIChapterAndContents {
+pub struct UiChapterAndContents {
     pub comic_id: String,
     pub comic_path_word: String,
     pub contents: Vec<ChapterImage>,
@@ -432,7 +436,7 @@ pub struct UIChapterAndContents {
     pub words: Vec<i64>,
 }
 
-impl From<ChapterAndContents> for UIChapterAndContents {
+impl From<ChapterAndContents> for UiChapterAndContents {
     fn from(value: ChapterAndContents) -> Self {
         Self {
             comic_id: value.comic_id,
@@ -456,22 +460,22 @@ impl From<ChapterAndContents> for UIChapterAndContents {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIPageUIComicInList {
-    pub list: Vec<UIComicInList>,
+pub struct UiPageUiComicInList {
+    pub list: Vec<UiComicInList>,
     pub total: i64,
     pub limit: i64,
     pub offset: i64,
 }
 
-impl From<Page<RecommendItem>> for UIPageUIComicInList {
+impl From<Page<RecommendItem>> for UiPageUiComicInList {
     fn from(page: Page<RecommendItem>) -> Self {
         Self {
             list: page
                 .list
                 .into_iter()
-                .map(|x| UIComicInList::from(x))
+                .map(|x| UiComicInList::from(x))
                 .collect(),
             total: page.total,
             limit: page.limit,
@@ -480,7 +484,7 @@ impl From<Page<RecommendItem>> for UIPageUIComicInList {
     }
 }
 
-impl From<RecommendItem> for UIComicInList {
+impl From<RecommendItem> for UiComicInList {
     fn from(comic: RecommendItem) -> Self {
         let comic = comic.comic;
         Self {
@@ -496,13 +500,13 @@ impl From<RecommendItem> for UIComicInList {
     }
 }
 
-impl From<Page<ComicInSearch>> for UIPageUIComicInList {
+impl From<Page<ComicInSearch>> for UiPageUiComicInList {
     fn from(page: Page<ComicInSearch>) -> Self {
         Self {
             list: page
                 .list
                 .into_iter()
-                .map(|x| UIComicInList::from(x))
+                .map(|x| UiComicInList::from(x))
                 .collect(),
             total: page.total,
             limit: page.limit,
@@ -510,33 +514,33 @@ impl From<Page<ComicInSearch>> for UIPageUIComicInList {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UITags {
+pub struct UiTags {
     pub ordering: Vec<Tag>,
-    pub theme: Vec<UITheme>,
+    pub theme: Vec<UiTheme>,
     pub top: Vec<Tag>,
 }
 
-impl From<crate::copy_client::Tags> for UITags {
+impl From<crate::copy_client::Tags> for UiTags {
     fn from(tags: crate::copy_client::Tags) -> Self {
         Self {
             ordering: tags.ordering,
-            theme: tags.theme.into_iter().map(|x| UITheme::from(x)).collect(),
+            theme: tags.theme.into_iter().map(|x| UiTheme::from(x)).collect(),
             top: tags.top,
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UITheme {
+pub struct UiTheme {
     pub count: i64,
     pub initials: i64,
     pub name: String,
     pub path_word: String,
 }
 
-impl From<crate::copy_client::Theme> for UITheme {
+impl From<crate::copy_client::Theme> for UiTheme {
     fn from(theme: crate::copy_client::Theme) -> Self {
         Self {
             count: theme.count,
@@ -546,22 +550,22 @@ impl From<crate::copy_client::Theme> for UITheme {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIPageComicInExplore {
-    pub list: Vec<UIComicInExplore>,
+pub struct UiPageComicInExplore {
+    pub list: Vec<UiComicInExplore>,
     pub total: i64,
     pub limit: i64,
     pub offset: i64,
 }
 
-impl From<Page<ComicInExplore>> for UIPageComicInExplore {
+impl From<Page<ComicInExplore>> for UiPageComicInExplore {
     fn from(page: Page<ComicInExplore>) -> Self {
         Self {
             list: page
                 .list
                 .into_iter()
-                .map(|x| UIComicInExplore::from(x))
+                .map(|x| UiComicInExplore::from(x))
                 .collect(),
             total: page.total,
             limit: page.limit,
@@ -569,9 +573,9 @@ impl From<Page<ComicInExplore>> for UIPageComicInExplore {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIComicInExplore {
+pub struct UiComicInExplore {
     pub name: String,
     pub path_word: String,
     pub free_type: ClassifyItem,
@@ -583,7 +587,7 @@ pub struct UIComicInExplore {
     pub males: Vec<SexualOrientation>,
 }
 
-impl From<ComicInExplore> for UIComicInExplore {
+impl From<ComicInExplore> for UiComicInExplore {
     fn from(comic: ComicInExplore) -> Self {
         Self {
             name: comic.name,
@@ -598,17 +602,17 @@ impl From<ComicInExplore> for UIComicInExplore {
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIPageUIViewLog {
-    pub list: Vec<UIViewLog>,
+pub struct UiPageUiViewLog {
+    pub list: Vec<UiViewLog>,
     pub total: i64,
     pub limit: i64,
     pub offset: i64,
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIQueryDownloadComic {
+pub struct UiQueryDownloadComic {
     pub path_word: String,
     pub alias: Option<String>,
     pub author: String,
@@ -633,21 +637,21 @@ pub struct UIQueryDownloadComic {
     pub status: String,
     pub theme: String,
     pub uuid: String,
-    pub groups: Vec<UIQueryDownloadComicGroup>,
-    pub chapters: Vec<UIQueryDownloadComicChapter>,
+    pub groups: Vec<UiQueryDownloadComicGroup>,
+    pub chapters: Vec<UiQueryDownloadComicChapter>,
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIQueryDownloadComicGroup {
+pub struct UiQueryDownloadComicGroup {
     pub comic_path_word: String,
     pub group_path_word: String,
     pub count: i64,
     pub name: String,
     pub group_rank: i64,
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIQueryDownloadComicChapter {
+pub struct UiQueryDownloadComicChapter {
     pub comic_path_word: String,
     pub uuid: String,
     pub comic_id: String,
@@ -666,9 +670,9 @@ pub struct UIQueryDownloadComicChapter {
     #[serde(rename = "type")]
     pub type_field: i64,
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIDownloadComic {
+pub struct UiDownloadComic {
     pub path_word: String,
     pub alias: Option<String>,
     pub author: String,
@@ -703,7 +707,7 @@ pub struct UIDownloadComic {
     pub download_status: i64,
 }
 
-impl From<crate::database::download::download_comic::Model> for UIDownloadComic {
+impl From<crate::database::download::download_comic::Model> for UiDownloadComic {
     fn from(model: crate::database::download::download_comic::Model) -> Self {
         Self {
             path_word: model.path_word,
@@ -741,23 +745,23 @@ impl From<crate::database::download::download_comic::Model> for UIDownloadComic 
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UILoginState {
+pub struct UiLoginState {
     pub state: i64, // 0:NO_SET , 1:LOGIN_SUCCESS , 2:LOGIN_FAIL
     pub message: String,
     pub member: Option<MemberInfo>,
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIRegisterResult {
+pub struct UiRegisterResult {
     pub state: i64, //, 1:SUCCESS , 2:FAIL
     pub message: String,
     pub member: Option<RegisterResult>,
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UILocalCollect {
+pub struct UiLocalCollect {
     pub path_word: String,
     pub alias: Option<String>,
     pub author: String,
@@ -784,9 +788,9 @@ pub struct UILocalCollect {
     pub uuid: String,
     pub append_time: i64,
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIDownloadComicGroup {
+pub struct UiDownloadComicGroup {
     pub comic_path_word: String,
     pub group_path_word: String,
     pub count: i64,
@@ -794,7 +798,7 @@ pub struct UIDownloadComicGroup {
     pub group_rank: i64,
 }
 
-impl From<crate::database::download::download_comic_group::Model> for UIDownloadComicGroup {
+impl From<crate::database::download::download_comic_group::Model> for UiDownloadComicGroup {
     fn from(model: crate::database::download::download_comic_group::Model) -> Self {
         Self {
             comic_path_word: model.comic_path_word,
@@ -805,9 +809,9 @@ impl From<crate::database::download::download_comic_group::Model> for UIDownload
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIDownloadComicChapter {
+pub struct UiDownloadComicChapter {
     pub comic_path_word: String,
     pub uuid: String,
     pub comic_id: String,
@@ -828,7 +832,7 @@ pub struct UIDownloadComicChapter {
     pub download_status: i64,
 }
 
-impl From<crate::database::download::download_comic_chapter::Model> for UIDownloadComicChapter {
+impl From<crate::database::download::download_comic_chapter::Model> for UiDownloadComicChapter {
     fn from(model: crate::database::download::download_comic_chapter::Model) -> Self {
         Self {
             comic_path_word: model.comic_path_word,
@@ -851,9 +855,9 @@ impl From<crate::database::download::download_comic_chapter::Model> for UIDownlo
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIDownloadComicPage {
+pub struct UiDownloadComicPage {
     pub comic_path_word: String,
     pub chapter_uuid: String,
     pub image_index: i32,
@@ -865,7 +869,7 @@ pub struct UIDownloadComicPage {
     pub format: String,
 }
 
-impl From<crate::database::download::download_comic_page::Model> for UIDownloadComicPage {
+impl From<crate::database::download::download_comic_page::Model> for UiDownloadComicPage {
     fn from(model: crate::database::download::download_comic_page::Model) -> Self {
         Self {
             comic_path_word: model.comic_path_word,
@@ -880,16 +884,16 @@ impl From<crate::database::download::download_comic_page::Model> for UIDownloadC
         }
     }
 }
-
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIPageCollectedComic {
+pub struct UiPageCollectedComic {
     pub list: Vec<CollectedComic>,
     pub total: i64,
     pub limit: i64,
     pub offset: i64,
 }
 
-impl From<Page<CollectedComic>> for UIPageCollectedComic {
+impl From<Page<CollectedComic>> for UiPageCollectedComic {
     fn from(page: Page<CollectedComic>) -> Self {
         Self {
             list: page.list,

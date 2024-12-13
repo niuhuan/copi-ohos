@@ -41,7 +41,7 @@ pub(crate) async fn init() {
 pub(crate) async fn cache_first<T: for<'de> serde::Deserialize<'de> + serde::Serialize>(
     key: String,
     expire: Duration,
-    pin: Pin<Box<dyn Future<Output = copy_client::Result<T>>>>,
+    pin: Pin<Box<dyn Future<Output = copy_client::Result<T>> + Sync + Send>>,
 ) -> anyhow::Result<T> {
     let time = chrono::Local::now().timestamp_millis();
     let db = CACHE_DATABASE.get().unwrap().lock().await;
@@ -79,7 +79,7 @@ pub(crate) async fn cache_first_map<
 >(
     key: String,
     expire: Duration,
-    pin: Pin<Box<dyn Future<Output = copy_client::Result<T>>>>,
+    pin: Pin<Box<dyn Future<Output = copy_client::Result<T>> + Sync + Send>>,
 ) -> anyhow::Result<R> {
     Ok(R::from(cache_first(key, expire, pin).await?))
 }

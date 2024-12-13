@@ -1,6 +1,6 @@
 use crate::database::download;
 use crate::database::download::{download_comic, download_comic_chapter, download_comic_page};
-use crate::udto::UIQueryDownloadComic;
+use crate::udto::UiQueryDownloadComic;
 use crate::utils::{create_dir_if_not_exists, join_paths};
 use crate::{get_download_dir, CLIENT};
 use anyhow::Context;
@@ -364,7 +364,7 @@ pub(crate) async fn delete_download_comic(comic_path_word: String) -> anyhow::Re
     Ok(())
 }
 
-pub async fn append_download(data: UIQueryDownloadComic) -> anyhow::Result<()> {
+pub async fn append_download(data: UiQueryDownloadComic) -> anyhow::Result<()> {
     download::append_download(data.clone()).await?;
     Ok(())
 }

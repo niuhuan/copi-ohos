@@ -1,5 +1,5 @@
 use crate::database::connect_db;
-use crate::udto::UIQueryDownloadComic;
+use crate::udto::UiQueryDownloadComic;
 use once_cell::sync::OnceCell;
 use sea_orm::{DatabaseConnection, DbErr, TransactionTrait};
 use std::ops::Deref;
@@ -118,7 +118,7 @@ pub(crate) async fn remove_all(comic_path_word: String) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub async fn append_download(data: UIQueryDownloadComic) -> anyhow::Result<()> {
+pub async fn append_download(data: UiQueryDownloadComic) -> anyhow::Result<()> {
     let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
     db.transaction(|db| {
         Box::pin(async move {

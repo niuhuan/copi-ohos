@@ -1,21 +1,20 @@
 pub mod api;
-mod frb_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not be accurate, and you can change it according to your needs. */
 use crate::database::init_database;
 use base64::Engine;
 use copy_client::Client;
 use lazy_static::lazy_static;
 use once_cell::sync::OnceCell;
 use std::sync::Arc;
-use std::sync::Mutex;
 use tokio::runtime;
+use tokio::sync::Mutex;
 use utils::create_dir_if_not_exists;
 use utils::join_paths;
 pub mod copy_client;
 mod database;
 pub mod downloading;
+mod exports;
 mod udto;
 mod utils;
-mod exports;
 
 const API_URL: &str = "aHR0cHM6Ly9hcGkubWFuZ2Fjb3B5LmNvbQ==";
 // const API_URL_ORIGIN: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
@@ -32,8 +31,13 @@ lazy_static! {
         .max_blocking_threads(30)
         .build()
         .unwrap();
-    pub(crate) static ref CLIENT: Arc<Client> =
-        Arc::new(Client::new(reqwest::Client::new(), api_url()));
+    pub(crate) static ref CLIENT: Arc<Client> = Arc::new(Client::new(
+        reqwest::ClientBuilder::new()
+            .danger_accept_invalid_certs(true)
+            .build()
+            .unwrap(),
+        api_url()
+    ));
     static ref INIT_ED: Mutex<bool> = Mutex::new(false);
 }
 
@@ -42,8 +46,8 @@ static IMAGE_CACHE_DIR: OnceCell<String> = OnceCell::new();
 static DATABASE_DIR: OnceCell<String> = OnceCell::new();
 static DOWNLOAD_DIR: OnceCell<String> = OnceCell::new();
 
-pub fn init_root(path: &str) {
-    let mut lock = INIT_ED.lock().unwrap();
+pub async fn init_root(path: &str) {
+    let mut lock = INIT_ED.lock().await;
     if *lock {
         return;
     }
@@ -63,21 +67,17 @@ pub fn init_root(path: &str) {
     create_dir_if_not_exists(IMAGE_CACHE_DIR.get().unwrap());
     create_dir_if_not_exists(DATABASE_DIR.get().unwrap());
     create_dir_if_not_exists(DOWNLOAD_DIR.get().unwrap());
-    RUNTIME.block_on(init_database());
-    RUNTIME.block_on(async {
-        *downloading::DOWNLOAD_AND_EXPORT_TO.lock().await =
-            database::properties::property::load_property("download_and_export_to".to_owned())
-                .await
-                .unwrap()
-    });
-    RUNTIME.block_on(async {
-        *downloading::PAUSE_FLAG.lock().await =
-            database::properties::property::load_property("download_pause".to_owned())
-                .await
-                .unwrap()
-                == "true"
-    });
-    RUNTIME.spawn(downloading::start_download());
+    init_database().await;
+    *downloading::DOWNLOAD_AND_EXPORT_TO.lock().await =
+        database::properties::property::load_property("download_and_export_to".to_owned())
+            .await
+            .unwrap();
+    *downloading::PAUSE_FLAG.lock().await =
+        database::properties::property::load_property("download_pause".to_owned())
+            .await
+            .unwrap()
+            == "true";
+    tokio::spawn(downloading::start_download());
 }
 
 #[allow(dead_code)]

@@ -1,7 +1,6 @@
 use crate::{
     database::download::{download_comic, download_comic_chapter, download_comic_page},
     downloading::{get_cover_path, get_image_path},
-    udto::ExportsType,
     utils::{allowed_file_name, create_dir_if_not_exists, join_paths},
 };
 use anyhow::{Context, Ok, Result};
@@ -13,7 +12,7 @@ use tokio::io::AsyncReadExt;
 pub(crate) async fn exports(
     uuid_list: Vec<String>,
     export_to_folder: String,
-    exports_type: ExportsType,
+    exports_type: String,
 ) -> Result<()> {
     let download_comics = download_comic::find_by_uuid_list(uuid_list.as_slice()).await?;
     for ele in &download_comics {
@@ -21,11 +20,13 @@ pub(crate) async fn exports(
             return Err(anyhow::anyhow!("comic not downloaded"));
         }
     }
+    let exports_type = exports_type.clone();
     for download_comic in &download_comics {
         let name = download_comic.name.as_str();
-        let mut exporter = match exports_type {
-            ExportsType::Folder => FolderExporter::on_start(&export_to_folder, &name).await?,
-            ExportsType::Zip => ZipExporter::on_start(&export_to_folder, &name).await?,
+        let mut exporter = match exports_type.as_str() {
+            "Folder" => FolderExporter::on_start(&export_to_folder, &name).await?,
+            "Zip" => ZipExporter::on_start(&export_to_folder, &name).await?,
+            _ => return Err(anyhow::anyhow!("unknown exports type")),
         };
         let chapters =
             download_comic_chapter::find_by_comic_path_word(download_comic.path_word.as_str())
@@ -70,7 +71,7 @@ struct FolderExporter {
 }
 
 impl FolderExporter {
-    async fn on_start(export_to_folder: &str, name: &str) -> Result<Box<dyn Exporter>> {
+    async fn on_start(export_to_folder: &str, name: &str) -> Result<Box<dyn Exporter + Sync + Send>> {
         let comic_folder = join_paths(vec![export_to_folder, allowed_file_name(name).as_str()]);
         create_dir_if_not_exists(comic_folder.as_str());
         Ok(Box::new(Self {
@@ -126,7 +127,7 @@ struct ZipExporter {
 }
 
 impl ZipExporter {
-    async fn on_start(export_to_folder: &str, name: &str) -> Result<Box<dyn Exporter>> {
+    async fn on_start(export_to_folder: &str, name: &str) -> Result<Box<dyn Exporter + Sync + Send>> {
         let comic_folder = join_paths(vec![export_to_folder, allowed_file_name(name).as_str()]);
         let file = tokio::fs::File::create(format!("{}.zip", comic_folder).as_str()).await?;
         let writer = ZipFileWriter::with_tokio(file);

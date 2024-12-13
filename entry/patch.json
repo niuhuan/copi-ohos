@@ -1,0 +1,11 @@
+{
+  "app": {
+    "bundleName": "n.opensource.copi",
+    "patchVersionCode": 2000062,
+    "versionCode": 1000000
+  },
+  "module": {
+    "name": "entry",
+    "type": "hotreload"
+  }
+}

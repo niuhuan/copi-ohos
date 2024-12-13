@@ -1,7 +1,6 @@
 use crate::database::active::ACTIVE_DATABASE;
 use crate::database::create_table_if_not_exists;
 use sea_orm::entity::prelude::*;
-use sea_orm::EntityTrait;
 use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
 use std::ops::Deref;

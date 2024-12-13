@@ -1,4 +1,6 @@
+use std::collections::HashMap;
 use linked_hash_map::LinkedHashMap;
+use napi_derive_ohos::napi;
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -9,6 +11,7 @@ pub struct Response {
     pub results: Value,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Tags {
     pub ordering: Vec<Tag>,
@@ -16,18 +19,18 @@ pub struct Tags {
     pub top: Vec<Tag>,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Tag {
     pub name: String,
     pub path_word: String,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Theme {
-    pub color_h5: Value,
     pub count: i64,
     pub initials: i64,
-    pub logo: Value,
     pub name: String,
     pub path_word: String,
 }
@@ -40,6 +43,7 @@ pub struct Page<T> {
     pub offset: i64,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ComicInSearch {
     pub name: String,
@@ -52,6 +56,7 @@ pub struct ComicInSearch {
     pub popular: i64,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Author {
     pub name: String,
@@ -59,6 +64,7 @@ pub struct Author {
     pub path_word: String,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RankItem {
     pub comic: ComicInList,
@@ -70,6 +76,7 @@ pub struct RankItem {
     pub sort_last: i64,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ComicInList {
     pub author: Vec<Author>,
@@ -80,13 +87,13 @@ pub struct ComicInList {
     pub name: String,
     pub path_word: String,
     pub popular: i64,
-    pub theme: Vec<Value>,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ComicData {
     pub comic: Comic,
-    pub groups: LinkedHashMap<String, Group>,
+    pub groups: HashMap<String, Group>,
     pub is_lock: bool,
     pub is_login: bool,
     pub is_mobile_bind: bool,
@@ -94,6 +101,7 @@ pub struct ComicData {
     pub popular: i64,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Comic {
     pub alias: Option<String>,
@@ -105,7 +113,6 @@ pub struct Comic {
     pub brief: String,
     pub close_comment: bool,
     pub close_roast: bool,
-    pub clubs: Vec<Value>,
     pub cover: String,
     pub datetime_updated: String,
     pub females: Vec<SexualOrientation>,
@@ -114,7 +121,6 @@ pub struct Comic {
     pub last_chapter: LastChapter,
     pub males: Vec<SexualOrientation>,
     pub name: String,
-    pub parodies: Vec<Value>,
     pub path_word: String,
     pub popular: i64,
     pub reclass: ClassifyItem,
@@ -126,18 +132,21 @@ pub struct Comic {
     pub uuid: String,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LastChapter {
     pub name: String,
     pub uuid: String,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ClassifyItem {
     pub display: String,
     pub value: i64,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Group {
     pub count: i64,
@@ -145,13 +154,13 @@ pub struct Group {
     pub path_word: String,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ComicChapter {
     pub comic_id: String,
     pub comic_path_word: String,
     pub count: i64,
     pub datetime_created: String,
-    pub group_id: Value,
     pub group_path_word: String,
     pub img_type: i64,
     pub index: i64,
@@ -166,6 +175,7 @@ pub struct ComicChapter {
     pub uuid: String,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ComicQuery {
     pub browse: Option<Browse>,
@@ -176,6 +186,7 @@ pub struct ComicQuery {
     pub is_vip: bool,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Browse {
     pub chapter_id: String,
@@ -186,6 +197,7 @@ pub struct Browse {
     pub path_word: String,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChapterData {
     pub chapter: ChapterAndContents,
@@ -197,6 +209,7 @@ pub struct ChapterData {
     pub show_app: bool,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChapterAndContents {
     pub comic_id: String,
@@ -204,7 +217,6 @@ pub struct ChapterAndContents {
     pub contents: Vec<ChapterImage>,
     pub count: i64,
     pub datetime_created: String,
-    pub group_id: Value,
     pub group_path_word: String,
     pub img_type: i64,
     pub index: i64,
@@ -221,11 +233,13 @@ pub struct ChapterAndContents {
     pub words: Vec<i64>,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChapterImage {
     pub url: String,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChapterComicInfo {
     pub name: String,
@@ -234,6 +248,7 @@ pub struct ChapterComicInfo {
     pub uuid: String,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RecommendItem {
     #[serde(rename = "type")]
@@ -241,6 +256,7 @@ pub struct RecommendItem {
     pub comic: ComicInList,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ComicInExplore {
     pub name: String,
@@ -249,12 +265,12 @@ pub struct ComicInExplore {
     pub females: Vec<SexualOrientation>,
     pub males: Vec<SexualOrientation>,
     pub author: Vec<Author>,
-    pub theme: Vec<Value>,
     pub cover: String,
     pub popular: i64,
     pub datetime_updated: Option<String>,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SexualOrientation {
     pub name: String,
@@ -262,6 +278,7 @@ pub struct SexualOrientation {
     pub gender: i64,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RegisterResult {
     pub user_id: String,
@@ -315,6 +332,7 @@ pub struct LoginResult {
     pub scy_answer: bool,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MemberInfo {
     pub user_id: String,
@@ -359,6 +377,7 @@ pub struct MemberInfo {
     pub day_downloads: i64,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CollectedComic {
     pub uuid: i64,
@@ -369,12 +388,14 @@ pub struct CollectedComic {
     pub comic: CollectedComicInfo,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LastBrowse {
     pub last_browse_id: String,
     pub last_browse_name: String,
 }
 
+#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CollectedComicInfo {
     pub uuid: String,

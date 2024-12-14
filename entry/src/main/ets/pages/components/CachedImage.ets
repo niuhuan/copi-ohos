@@ -74,7 +74,10 @@ export struct CachedImage {
             .fontSize(30)
             .fontColor('#666666')
         } else {
-          Text('Error')
+          Text(materialIconData('error'))
+            .fontFamily(materialIconsFontFamily)
+            .fontSize(30)
+            .fontColor('#666666')
         }
       }
       .width(this.imageWidth)

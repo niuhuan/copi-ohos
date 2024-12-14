@@ -70,7 +70,7 @@ pub async fn set_proxy(proxy: String) -> Result<()> {
                 }
                 .danger_accept_invalid_certs(true)
                 .connect_timeout(std::time::Duration::from_secs(5))
-                    .read_timeout(std::time::Duration::from_secs(10))
+                    .read_timeout(std::time::Duration::from_secs(30))
                 .build()?,
             )
             .await;

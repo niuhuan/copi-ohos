@@ -5,7 +5,6 @@ use copy_client::Client;
 use lazy_static::lazy_static;
 use once_cell::sync::OnceCell;
 use std::sync::Arc;
-use tokio::runtime;
 use tokio::sync::Mutex;
 use utils::create_dir_if_not_exists;
 use utils::join_paths;
@@ -28,7 +27,7 @@ lazy_static! {
         reqwest::ClientBuilder::new()
             .danger_accept_invalid_certs(true)
             .connect_timeout(std::time::Duration::from_secs(5))
-            .read_timeout(std::time::Duration::from_secs(10))
+            .read_timeout(std::time::Duration::from_secs(30))
             .build()
             .unwrap(),
         api_url()

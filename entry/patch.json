@@ -1,7 +1,7 @@
 {
   "app": {
     "bundleName": "n.opensource.copi",
-    "patchVersionCode": 2000219,
+    "patchVersionCode": 2000235,
     "versionCode": 1000000
   },
   "module": {

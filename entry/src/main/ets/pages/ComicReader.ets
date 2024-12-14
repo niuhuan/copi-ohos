@@ -13,6 +13,7 @@ import { Loading } from "./components/Loading"
 import { image } from '@kit.ImageKit';
 import { window } from '@kit.ArkUI';
 import { common } from "@kit.AbilityKit";
+import { navStack } from "./components/Nav";
 
 @Entry
 @Component
@@ -25,6 +26,9 @@ export struct ComicReader {
   @State sizeMap: Map<string, image.Size> = new Map()
   @State toolBarHeight: number = 0
   @State fullScreen: boolean = false
+  @State sliderValue: number = 0
+  @State sliderInValue: number | undefined = undefined
+  @State sliderOutValue: number = 0
 
   async init() {
     this.loadingState = 0
@@ -42,6 +46,17 @@ export struct ComicReader {
     const avoidArea = win.getWindowAvoidArea(avoidAreaType);
     const height = avoidArea.topRect.height;
     this.toolBarHeight = height
+  }
+
+  setChapter(chapter: UiComicChapter) {
+    this.loadingState = 0
+    this.param!.chapter = chapter
+    this.data = null
+    this.sizeMap.clear()
+    this.sliderValue = 0
+    this.sliderInValue = undefined
+    this.listScroller.scrollTo({ xOffset: 0, yOffset: 0 })
+    this.init()
   }
 
   build() {
@@ -66,6 +81,7 @@ export struct ComicReader {
       Stack() {
         this.reader(param, this.data!)
         if (!this.fullScreen) {
+          this.barTop()
           this.barBottom()
         }
         if (this.sliderInValue != undefined) {
@@ -80,6 +96,26 @@ export struct ComicReader {
           this.init()
         })
     }
+  }
+
+  @Builder
+  barTop() {
+    Flex() {
+      Text() {
+        SymbolSpan($r('sys.symbol.arrow_left'))
+          .fontSize(20)
+      }.fontColor('#fff')
+      .onClick(() => {
+        navStack.pop()
+      })
+    }.position({ top: 0 })
+    .padding({
+      top: 45,
+      bottom: 25,
+      left: 30,
+      right: 20
+    })
+    .backgroundColor('#99000000')
   }
 
   @Builder
@@ -138,10 +174,6 @@ export struct ComicReader {
     }.alignItems(VerticalAlign.Center)
   }
 
-  @State sliderValue: number = 0
-  @State sliderInValue: number | undefined = undefined
-  @State sliderOutValue: number = 0
-
   @Builder
   reader(param: ComicReaderParam, data: UiChapterData) {
     List({ scroller: this.listScroller }) {
@@ -165,15 +197,61 @@ export struct ComicReader {
           }
         }
       )
+      ListItem() {
+        Column() {
+          Text(' 下一章 ')
+            .padding(40)
+            .fontSize(35)
+            .fontColor('#fff')
+            .backgroundColor('#66999999')
+            .align(Alignment.Center)
+            .alignSelf(ItemAlign.Center)
+            .onClick(() => this.nextChapter())
+        }.alignItems(HorizontalAlign.Center)
+        .width('100%')
+      }
+
+      ListItem().height(this.toolBarHeight)
     }
     .width('100%')
     .height('100%')
     .onScrollIndex((s, e, c) => {
-      this.sliderValue = (s < 1 ? 1 : s) - 1
+      if (s < 1) {
+        this.sliderValue = 0
+      } else if (s >= this.data!.chapter.contents.length) {
+        this.sliderValue = this.data!.chapter.contents.length - 1
+      } else {
+        this.sliderValue = s - 1
+      }
     })
     .onClick(() => {
       this.fullScreen = !this.fullScreen
     })
+  }
+
+  nextChapter() {
+    const next = this.nextChapterValue();
+    if (next) {
+      this.setChapter(next)
+    }
+  }
+
+  nextChapterValue(): UiComicChapter | null {
+    let acc = false
+    for (let i = 0; i < this.param!.comicData.groups.length; i++) {
+      let g = this.param!.comicData.groups[i]!;
+      let cs: Array<UiComicChapter> = this.param!.chapterDataMap[g.pathWord]!;
+      for (let j = 0; j < cs.length; j++) {
+        let c = cs[j]!;
+        if (acc) {
+          return c
+        }
+        if (c.uuid == this.param!.chapter.uuid) {
+          acc = true
+        }
+      }
+    }
+    return null
   }
 }
 

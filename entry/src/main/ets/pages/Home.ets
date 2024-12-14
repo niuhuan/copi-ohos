@@ -1,6 +1,9 @@
 import { colors, context } from '../data/context'
+import { ComicInfo } from './ComicInfo'
+import { ComicReader } from './ComicReader'
 import { Discovery } from './components/Discovery'
 import { materialIconData, materialIconsFontFamily } from './components/MaterialIcons'
+import { navStack } from './components/Nav'
 
 @Entry
 @Component
@@ -22,6 +25,22 @@ struct Home {
   }
 
   build() {
+    Navigation(navStack) {
+      this.tabs()
+    }.navDestination(this.pageMap)
+  }
+
+  @Builder
+  pageMap(name: string) {
+    if (name == 'pages/ComicInfo') {
+      ComicInfo()
+    } else if (name == 'pages/ComicReader') {
+      ComicReader()
+    }
+  }
+
+  @Builder
+  tabs() {
     Column() {
       Tabs({ barPosition: BarPosition.End, controller: this.tabController, index: this.currentIndex }) {
         TabContent() {
@@ -29,9 +48,12 @@ struct Home {
         }.tabBar(this.hotTabMenu())
 
         TabContent() {
-          Discovery()
-            .width('100%')
-            .height('100%')
+          Column() {
+            Discovery()
+              .width('100%')
+              .height('100%')
+            Blank(1).shadow({ radius: 3 })
+          }
         }.tabBar(this.discoverTabMenu())
 
         TabContent() {

@@ -1,9 +1,8 @@
 import rust, { UiComicInExplore, UiTags } from 'libcopi_rust.so'
-import { colors, context } from '../../data/context'
 import { IndicatorWidget, LoadingMoreBase, } from '@candies/loading_more_list'
-import { CachedImage } from './CachedImage';
 import { Loading } from './Loading';
-import { materialIconData, materialIconsFontFamily } from './MaterialIcons';
+import { ComicCard } from './ComicCard';
+import { navStack } from './Nav';
 
 
 @Entry
@@ -125,11 +124,23 @@ export struct Discovery {
     }
     .flexGrow(0)
     .flexShrink(0)
+    .padding({
+      top: 10,
+      bottom: 10,
+    })
+    .shadow({
+      radius: 3,
+    })
   }
 
   @Builder
   buildList() {
     List() {
+      ListItem() {
+        Column() {
+        }.height(10)
+      }
+
       ForEach(this.listData, (item: UiComicInExplore, index) => {
         ListItem() {
           if (this.listData.isLoadingMoreItem(item)) {
@@ -139,72 +150,16 @@ export struct Discovery {
             })
           } else {
             ComicCard({ comic: item })
+              .onClick(() => {
+                navStack.pushPath(new NavPathInfo('pages/ComicInfo', item))
+              })
           }
         }.width('100%')
       },
       )
     }
-    .backgroundColor('#CCC')
     .onReachEnd(() => {
       this.listData.loadMore();
-    })
-  }
-}
-
-@Component
-struct ComicCard {
-  @Prop comic: UiComicInExplore
-
-  build() {
-    Flex() {
-      CachedImage({
-        source: this.comic.cover,
-        useful: 'COMIC_COVER',
-        extendsFieldFirst: this.comic.pathWord,
-        borderOptions: { radius: 3.5 },
-        imageWidth: 328 / 4,
-        imageHeight: 422 / 4,
-      })
-        .width(328 / 4)
-        .height(422 / 4)
-        .flexShrink(0)
-        .flexGrow(0)
-      Blank(10)
-      Column() {
-        Blank(10)
-        Text(`${this.comic.name}\n`)
-          .maxLines(2)
-          .fontWeight(FontWeight.Bold)
-        Blank(10)
-        Text(this.comic.author?.map(a => a.name)?.join("、") ?? "")
-          .fontSize(14)
-          .fontColor(colors.authorColor)
-        Blank(10)
-        Flex() {
-          Text(this.comic.datetimeUpdated)
-            .flexGrow(0)
-            .flexShrink(0)
-          Blank(1)
-            .flexGrow(1)
-            .flexShrink(1)
-          Text(materialIconData('favorite'))
-            .fontFamily(materialIconsFontFamily)
-            .fontColor(colors.authorColor)
-            .fontSize(16)
-          Text(` ${this.comic.popular}`)
-            .flexGrow(0)
-            .flexShrink(0)
-            .fontSize(14)
-        }
-      }
-      .flexGrow(1)
-      .alignItems(HorizontalAlign.Start)
-    }
-    .padding({
-      top: 8,
-      bottom: 8,
-      left: 15,
-      right: 15
     })
   }
 }

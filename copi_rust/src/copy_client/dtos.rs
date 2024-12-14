@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use linked_hash_map::LinkedHashMap;
 use napi_derive_ohos::napi;
 use serde_derive::{Deserialize, Serialize};
@@ -89,11 +88,10 @@ pub struct ComicInList {
     pub popular: i64,
 }
 
-#[napi(object)]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ComicData {
     pub comic: Comic,
-    pub groups: HashMap<String, Group>,
+    pub groups: LinkedHashMap<String, Group>,
     pub is_lock: bool,
     pub is_login: bool,
     pub is_mobile_bind: bool,

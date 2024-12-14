@@ -1,14 +1,11 @@
 @Entry
 @Component
-export struct Loading {
+export struct Error {
   @Prop text: string
 
   build() {
     Column() {
-      Progress({
-        type: ProgressType.Ring,
-        value: 50,
-      }).style({ strokeWidth: 20, status: ProgressStatus.LOADING })
+      Text('Error')
       if (this.text != null && this.text.length > 0) {
         Blank()
           .height(20)

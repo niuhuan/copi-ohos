@@ -904,7 +904,3 @@ impl From<Page<CollectedComic>> for UiPageCollectedComic {
     }
 }
 
-pub enum ExportsType {
-    Folder,
-    Zip,
-}

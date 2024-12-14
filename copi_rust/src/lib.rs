@@ -24,16 +24,11 @@ fn api_url() -> String {
 }
 
 lazy_static! {
-    pub(crate) static ref RUNTIME: runtime::Runtime = runtime::Builder::new_multi_thread()
-        .enable_all()
-        .thread_keep_alive(tokio::time::Duration::new(60, 0))
-        .worker_threads(30)
-        .max_blocking_threads(30)
-        .build()
-        .unwrap();
     pub(crate) static ref CLIENT: Arc<Client> = Arc::new(Client::new(
         reqwest::ClientBuilder::new()
             .danger_accept_invalid_certs(true)
+            .connect_timeout(std::time::Duration::from_secs(5))
+            .read_timeout(std::time::Duration::from_secs(10))
             .build()
             .unwrap(),
         api_url()
@@ -95,4 +90,17 @@ pub(crate) fn get_database_dir() -> &'static String {
 
 pub(crate) fn get_download_dir() -> &'static String {
     DOWNLOAD_DIR.get().unwrap()
+}
+
+#[cfg(not(target_family = "wasm"))]
+#[napi_ohos::module_init]
+fn init() {
+    let rt = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .worker_threads(20)
+        .thread_keep_alive(std::time::Duration::from_secs(60))
+        .max_blocking_threads(10)
+        .build()
+        .unwrap();
+    napi_ohos::bindgen_prelude::create_custom_tokio_runtime(rt);
 }

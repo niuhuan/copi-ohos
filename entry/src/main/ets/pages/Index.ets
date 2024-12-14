@@ -12,15 +12,15 @@ struct Index {
 
   async init() {
     await context.login()
-    router.pushUrl({
-      url: 'pages/Home'
+    router.replaceUrl({
+      url: 'pages/Home',
     })
   }
 
   build() {
     RelativeContainer() {
       Text(this.message)
-        .id('HelloWorld')
+        .id('Loading')
         .fontSize(50)
         .fontWeight(FontWeight.Bold)
         .alignRules({

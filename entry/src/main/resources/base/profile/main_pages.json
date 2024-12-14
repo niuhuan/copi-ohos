@@ -1,6 +1,7 @@
 {
   "src": [
     "pages/Index",
-    "pages/Home"
+    "pages/Home",
+    "pages/ComicInfo"
   ]
 }

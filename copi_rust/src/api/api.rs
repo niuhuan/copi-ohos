@@ -6,7 +6,7 @@ use crate::database::download::{
 };
 use crate::database::properties::property;
 use crate::udto::{
-    ExportsType, UiCacheImage, UiChapterData, UiComicData, UiComicQuery, UiDownloadComic,
+    UiCacheImage, UiChapterData, UiComicData, UiComicQuery, UiDownloadComic,
     UiDownloadComicChapter, UiDownloadComicGroup, UiDownloadComicPage, UiLoginState,
     UiPageCollectedComic, UiPageComicChapter, UiPageComicInExplore, UiPageRankItem,
     UiPageUiComicInList, UiPageUiViewLog, UiQueryDownloadComic, UiRegisterResult, UiTags,
@@ -69,6 +69,8 @@ pub async fn set_proxy(proxy: String) -> Result<()> {
                     reqwest::Client::builder().proxy(Proxy::all(proxy.as_str())?)
                 }
                 .danger_accept_invalid_certs(true)
+                .connect_timeout(std::time::Duration::from_secs(5))
+                    .read_timeout(std::time::Duration::from_secs(10))
                 .build()?,
             )
             .await;

@@ -4,6 +4,7 @@ import { ComicReader } from './ComicReader'
 import { Discovery } from './components/Discovery'
 import { materialIconData, materialIconsFontFamily } from './components/MaterialIcons'
 import { navStack } from './components/Nav'
+import { Rank } from './components/Rank'
 
 @Entry
 @Component
@@ -44,7 +45,7 @@ struct Home {
     Column() {
       Tabs({ barPosition: BarPosition.End, controller: this.tabController, index: this.currentIndex }) {
         TabContent() {
-          Text('hot')
+          Rank()
         }.tabBar(this.hotTabMenu())
 
         TabContent() {

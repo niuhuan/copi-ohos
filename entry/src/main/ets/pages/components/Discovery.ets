@@ -1,9 +1,10 @@
 import rust, { UiComicInExplore, UiTags } from 'libcopi_rust.so'
 import { IndicatorWidget, LoadingMoreBase, } from '@candies/loading_more_list'
 import { Loading } from './Loading';
-import { ComicCard } from './ComicCard';
+import { ComicCard, ComicCardData } from './ComicCard';
 import { navStack } from './Nav';
-
+import { ComicCardList } from './ComicCardList';
+import { ComicListData } from './ComicListData';
 
 @Entry
 @Component
@@ -66,7 +67,7 @@ export struct Discovery {
     } else if (this.tagsState == 1) {
       Flex({ direction: FlexDirection.Column }) {
         this.tagsSelector()
-        this.buildList()
+        ComicCardList({ listData: this.listData })
       }
       .width('100%')
       .height('100%')
@@ -132,77 +133,23 @@ export struct Discovery {
       radius: 3,
     })
   }
-
-  @Builder
-  buildList() {
-    List() {
-      ListItem() {
-        Column() {
-        }.height(10)
-      }
-
-      ForEach(this.listData, (item: UiComicInExplore, index) => {
-        ListItem() {
-          if (this.listData.isLoadingMoreItem(item)) {
-            IndicatorWidget({
-              indicatorStatus: this.listData.getLoadingMoreItemStatus(item),
-              sourceList: this.listData,
-            })
-          } else {
-            ComicCard({ comic: item })
-              .onClick(() => {
-                navStack.pushPath(new NavPathInfo('pages/ComicInfo', item))
-              })
-          }
-        }.width('100%')
-      },
-      )
-    }
-    .onReachEnd(() => {
-      this.listData.loadMore();
-    })
-  }
 }
 
-class ListData extends LoadingMoreBase<UiComicInExplore> {
+class ListData extends ComicListData {
   private order: string
   private theme: string
   private top: string
 
   constructor(order: string, theme: string, top: string) {
-    super();
+    super((offset, limit) => rust.explorer(
+      this.order.length == 0 ? null : this.order,
+      this.top.length == 0 ? null : this.top,
+      this.theme.length == 0 ? null : this.theme,
+      offset,
+      limit,
+    ));
     this.order = order
     this.theme = theme
     this.top = top
-  }
-
-  hasMore = true
-  offset = 0
-  limit = 20
-  list = new Array<UiComicInExplore>()
-
-  public async refresh(notifyStateChanged: boolean = false): Promise<boolean> {
-    this.offset = 0
-    this.hasMore = true
-    return super.refresh(notifyStateChanged);
-  }
-
-  async loadData(isLoadMoreAction: boolean): Promise<boolean> {
-    try {
-      let data = await rust.explorer(
-        this.order.length == 0 ? null : this.order,
-        this.top.length == 0 ? null : this.top,
-        this.theme.length == 0 ? null : this.theme,
-        this.offset,
-        this.limit,
-      )
-      this.offset += this.limit
-      this.hasMore = data.list.length > 0
-      this.addAll(data.list)
-    } catch (e) {
-      console.error(`FETCH ERROR : ${e}}`)
-      throw e as Error
-    }
-    return true
   }
 }

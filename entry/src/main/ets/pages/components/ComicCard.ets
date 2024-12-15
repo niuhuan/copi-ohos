@@ -1,12 +1,21 @@
-import { UiComicInExplore } from 'libcopi_rust.so'
+import { Author, UiComicInExplore } from 'libcopi_rust.so'
 import { colors } from '../../data/context'
 import { CachedImage } from './CachedImage'
 import { materialIconData, materialIconsFontFamily } from './MaterialIcons'
 
+export interface ComicCardData {
+  name: string
+  pathWord: string
+  author: Array<Author>
+  cover: string
+  popular: number
+  datetimeUpdated?: string
+}
+
 @Entry
 @Component
 export struct ComicCard {
-  @Require @Prop comic: UiComicInExplore
+  @Require @Prop comic: ComicCardData
 
   build() {
     Flex() {
@@ -40,7 +49,7 @@ export struct ComicCard {
           Blank(1)
             .flexGrow(1)
             .flexShrink(1)
-          Text(materialIconData('favorite'))
+          Text(materialIconData('local_fire_department'))
             .fontFamily(materialIconsFontFamily)
             .fontColor(colors.authorColor)
             .fontSize(16)

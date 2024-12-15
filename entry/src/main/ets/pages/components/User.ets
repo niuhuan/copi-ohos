@@ -35,11 +35,11 @@ class HistoryListData extends ComicListData {
   }
 
   listComicViewLogs(offset: number, limit: number): Promise<DataExplore> {
-    return rust.listComicViewLogs(offset, limit).then(rankResult => {
+    return rust.listComicViewLogs(offset, limit).then(rustResult => {
       const a: DataExplore = {
-        offset: rankResult.offset,
-        limit: rankResult.limit,
-        list: rankResult.list.map(r => {
+        offset: rustResult.offset,
+        limit: rustResult.limit,
+        list: rustResult.list.map(r => {
           let b: ComicCardData = {
             name: r.comicName,
             pathWord: r.comicPathWord,

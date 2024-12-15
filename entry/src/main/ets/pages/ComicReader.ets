@@ -32,30 +32,39 @@ export struct ComicReader {
 
   async init() {
     this.loadingState = 0
-    try {
-      this.data = await rust.comicChapterData(
-        this.param!.exploreComic.pathWord,
-        this.param!.chapter.uuid,
-      )
-      this.loadingState = 1
-    } catch (e) {
-      this.loadingState = 2
-    }
     let win = await window.getLastWindow(this.context)
     const avoidAreaType = window.AvoidAreaType.TYPE_SYSTEM;
     const avoidArea = win.getWindowAvoidArea(avoidAreaType);
     const height = avoidArea.topRect.height;
     this.toolBarHeight = height
+    try {
+      this.data = await rust.comicChapterData(
+        this.param!.exploreComic.pathWord,
+        this.param!.chapter.uuid,
+      )
+      await rust.viewChapterPage(
+        this.param!.comicData.comic.pathWord,
+        this.param!.chapter.uuid,
+        this.param!.chapter.name,
+        this.param!.chapter.ordered,
+        this.param!.chapter.size,
+        this.param!.chapter.count,
+        0
+      )
+      this.loadingState = 1
+    } catch (e) {
+      this.loadingState = 2
+    }
   }
 
   setChapter(chapter: UiComicChapter) {
     this.loadingState = 0
+    this.listScroller.scrollTo({ xOffset: 0, yOffset: 0 })
     this.param!.chapter = chapter
     this.data = null
     this.sizeMap.clear()
     this.sliderValue = 0
     this.sliderInValue = undefined
-    this.listScroller.scrollTo({ xOffset: 0, yOffset: 0 })
     this.init()
   }
 
@@ -216,12 +225,14 @@ export struct ComicReader {
     .width('100%')
     .height('100%')
     .onScrollIndex((s, e, c) => {
-      if (s < 1) {
-        this.sliderValue = 0
-      } else if (s >= this.data!.chapter.contents.length) {
-        this.sliderValue = this.data!.chapter.contents.length - 1
-      } else {
-        this.sliderValue = s - 1
+      if (this.data != null) {
+        if (s < 1) {
+          this.sliderValue = 0
+        } else if (s >= this.data!.chapter.contents.length) {
+          this.sliderValue = this.data!.chapter.contents.length - 1
+        } else {
+          this.sliderValue = s - 1
+        }
       }
     })
     .onClick(() => {

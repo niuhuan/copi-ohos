@@ -1,6 +1,5 @@
 import { UiLoginState } from 'libcopi_rust.so'
 import rust from 'libcopi_rust.so'
-import { HashMap } from '@kit.ArkTS'
 
 class Context {
   private _loginEvent: Array<() => void> = []

@@ -21,17 +21,20 @@ export struct ComicCardList {
   buildList() {
     if (this.listData.indicatorStatus == IndicatorStatus.empty) {
       Text('空空如也')
-    } else if (this.listData.totalCount() == 1 && this.listData.isLoadingMoreItem(this.listData.getData(0))) {
-      Loading()
-        .width('100%')
-        .height('100%')
-    } else if (this.listData.totalCount() == 1 && `${this.listData.getData(0)}` == 'LoadingMoreErrorItem') {
+    } else if (
+      this.listData.indicatorStatus == IndicatorStatus.fullScreenError
+        || (this.listData.totalCount() == 1 && `${this.listData.getData(0)}` == 'LoadingMoreErrorItem')
+    ) {
       Error()
         .width('100%')
         .height('100%')
         .onClick(() => {
           this.listData.refresh(true);
         })
+    } else if (this.listData.totalCount() == 1 && this.listData.isLoadingMoreItem(this.listData.getData(0))) {
+      Loading()
+        .width('100%')
+        .height('100%')
     } else {
       this.foreachList()
     }

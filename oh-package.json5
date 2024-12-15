@@ -2,7 +2,7 @@
   "modelVersion": "5.0.1",
   "description": "Please describe the basic information.",
   "dependencies": {
-    "@candies/loading_more_list": "^1.0.3"
+    "@candies/loading_more_list": "^1.0.3",
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.19",

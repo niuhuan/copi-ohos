@@ -5,6 +5,7 @@ import { Discovery } from './components/Discovery'
 import { materialIconData, materialIconsFontFamily } from './components/MaterialIcons'
 import { navStack } from './components/Nav'
 import { Rank } from './components/Rank'
+import { User } from './components/User'
 
 @Entry
 @Component
@@ -67,7 +68,13 @@ struct Home {
         }.tabBar(this.discoverTabMenu())
 
         TabContent() {
-          Text('user')
+          Column() {
+            User()
+            Blank(1).shadow({
+              radius: 3,
+              color: '#66666666',
+            })
+          }
         }.tabBar(this.bookmarkTabMenu())
       }
       .onChange((index: number) => {

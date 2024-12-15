@@ -5,10 +5,9 @@ COPI
 
 ## 预览
 
-![1](images/1.png)
-![2](images/2.png)
-![3](images/3.png)
-![4](images/4.png)
+<img src="images/1.png" width="408" /><img src="images/2.png" width="408" />
+
+<img src="images/3.png" width="408" /><img src="images/4.png" width="408" />
 
 
 ## 构建

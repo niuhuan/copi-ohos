@@ -1,4 +1,4 @@
-import { colors, context } from './components/context'
+import { colors, context } from './components/Context'
 import { ComicInfo } from './ComicInfo'
 import { ComicReader } from './ComicReader'
 import { Discovery } from './components/Discovery'

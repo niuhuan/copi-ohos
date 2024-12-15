@@ -51,10 +51,16 @@ export struct ComicCardList {
       LazyForEach(this.listData, (item: ComicCardData, index) => {
         ListItem() {
           if (this.listData.isLoadingMoreItem(item)) {
-            IndicatorWidget({
-              indicatorStatus: this.listData.getLoadingMoreItemStatus(item),
-              sourceList: this.listData,
-            })
+            if (this.listData.getLoadingMoreItemStatus(item)) {
+              if (IndicatorStatus.noMoreLoad == this.listData.getLoadingMoreItemStatus(item)) {
+
+              } else {
+                IndicatorWidget({
+                  indicatorStatus: this.listData.getLoadingMoreItemStatus(item),
+                  sourceList: this.listData,
+                })
+              }
+            }
           } else {
             ComicCard({ comic: item })
               .onClick(() => {

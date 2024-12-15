@@ -1,4 +1,4 @@
-import { context } from './components/context'
+import { context } from './components/Context'
 import router from '@ohos.router';
 
 @Entry

@@ -1,5 +1,5 @@
 import { Author, UiComicInExplore } from 'libcopi_rust.so'
-import { colors } from './context'
+import { colors } from './Context'
 import { CachedImage } from './CachedImage'
 import { materialIconData, materialIconsFontFamily } from './MaterialIcons'
 

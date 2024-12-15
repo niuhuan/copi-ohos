@@ -22,6 +22,7 @@ export default class EntryAbility extends UIAbility {
   async init(windowStage: window.WindowStage) {
     try {
       await rust.init(this.context.filesDir);
+      await rust.cleanCache(3600 * 24 * 7);
     } catch (e) {
       hilog.error(0x0000, 'init', `${e}`);
     }

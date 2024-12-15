@@ -45,7 +45,13 @@ struct Home {
     Column() {
       Tabs({ barPosition: BarPosition.End, controller: this.tabController, index: this.currentIndex }) {
         TabContent() {
-          Rank()
+          Column() {
+            Rank()
+            Blank(1).shadow({
+              radius: 3,
+              color: '#66666666',
+            })
+          }
         }.tabBar(this.hotTabMenu())
 
         TabContent() {
@@ -53,7 +59,10 @@ struct Home {
             Discovery()
               .width('100%')
               .height('100%')
-            Blank(1).shadow({ radius: 3 })
+            Blank(1).shadow({
+              radius: 3,
+              color: '#66666666',
+            })
           }
         }.tabBar(this.discoverTabMenu())
 

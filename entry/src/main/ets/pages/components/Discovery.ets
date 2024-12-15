@@ -131,6 +131,7 @@ export struct Discovery {
     })
     .shadow({
       radius: 3,
+      color: '#66666666',
     })
   }
 }

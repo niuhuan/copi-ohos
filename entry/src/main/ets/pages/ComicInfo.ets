@@ -94,7 +94,7 @@ export struct ComicInfo {
             .padding({ left: 10 })
         }
         ListItem() {
-          Flex({ wrap: FlexWrap.Wrap }) {
+          Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.Center, justifyContent: FlexAlign.SpaceEvenly }) {
             ForEach(this.chapterDataMap[group.pathWord], (chapter: UiComicChapter, chapterIdx) => {
               Text(chapter.name)
                 .fontSize(12)

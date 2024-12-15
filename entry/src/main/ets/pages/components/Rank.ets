@@ -1,12 +1,31 @@
-import { ComicListData } from "./ComicListData"
+import { ComicListData, DataExplore } from "./ComicListData"
 import rust, { UiComicInExplore, UiTags } from 'libcopi_rust.so'
 import { ComicCardList } from "./ComicCardList"
 
 @Component
 @Entry
 export struct Rank {
-
   @State dataList: ComicListData = new RecommendsListData()
+
+  onChange(idx: number) {
+    switch (idx) {
+      case 0:
+        this.dataList = new RecommendsListData()
+        break;
+      case 1:
+        this.dataList = new RankListData("day")
+        break;
+      case 2:
+        this.dataList = new RankListData("week")
+        break;
+      case 3:
+        this.dataList = new RankListData("month")
+        break;
+      case 4:
+        this.dataList = new RankListData("total")
+        break;
+    }
+  }
 
   build() {
     Column() {
@@ -33,12 +52,13 @@ export struct Rank {
       }
       .barHeight(65)
       .height(65)
-      ComicCardList({listData: this.dataList})
+      .onChange((a) => this.onChange(a))
+
+      ComicCardList({ listData: this.dataList })
     }
     .width('100%').height('100%')
   }
 }
-
 
 
 class RecommendsListData extends ComicListData {
@@ -47,5 +67,26 @@ class RecommendsListData extends ComicListData {
       offset,
       limit,
     ));
+  }
+}
+
+class RankListData extends ComicListData {
+  constructor(rank: string) {
+    super((o, l) => {
+      return this.rankLoad(o, l, rank)
+    });
+  }
+
+  rankLoad(offset: number, limit: number, rank: string): Promise<DataExplore> {
+    return rust.rank(rank, offset, limit).then(rankResult => {
+      const a: DataExplore = {
+        offset: rankResult.offset,
+        limit: rankResult.limit,
+        list: rankResult.list.map(r => {
+          return r.comic
+        }),
+      };
+      return a;
+    })
   }
 }

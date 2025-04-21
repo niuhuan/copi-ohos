@@ -1,0 +1,10 @@
+{
+  license: "MIT",
+  author: "niuhuan",
+  name: "native",
+  description: "",
+  main: "index.ets",
+  version: "0.0.1",
+  types: "libs/index.d.ts",
+  dependencies: {}
+}

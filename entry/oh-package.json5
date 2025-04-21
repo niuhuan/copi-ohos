@@ -6,7 +6,9 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "libcopi_rust.so": "file:./libs"
-  }
+    "native": "file:../native/package.har",
+    "@candies/loading_more_list": "^1.0.3"
+  },
+  "devDependencies": {},
+  "dynamicDependencies": {}
 }
-

@@ -1,8 +1,5 @@
-import rust, { UiComicInExplore, UiTags } from 'libcopi_rust.so'
-import { IndicatorWidget, LoadingMoreBase, } from '@candies/loading_more_list'
+import { tags, UiTags, explorer, Tag } from 'native'
 import { Loading } from './Loading';
-import { ComicCard, ComicCardData } from './ComicCard';
-import { navStack } from './Nav';
 import { ComicCardList } from './ComicCardList';
 import { ComicListData } from './ComicListData';
 
@@ -34,8 +31,8 @@ export struct Discovery {
 
   async init() {
     try {
-      this.tags = await rust.tags();
-      let newOrdering = new Array<rust.Tag>();
+      this.tags = await tags();
+      let newOrdering = new Array<Tag>();
       this.tags.ordering.forEach(o => {
         newOrdering.push({
           name: `${o.name}-倒序`,
@@ -142,7 +139,7 @@ class ListData extends ComicListData {
   private top: string
 
   constructor(order: string, theme: string, top: string) {
-    super((offset, limit) => rust.explorer(
+    super((offset, limit) => explorer(
       this.order.length == 0 ? null : this.order,
       this.top.length == 0 ? null : this.top,
       this.theme.length == 0 ? null : this.theme,

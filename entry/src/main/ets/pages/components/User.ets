@@ -1,7 +1,7 @@
 import { ComicListData, DataExplore } from "./ComicListData"
-import rust, { UiComicInExplore, UiTags } from 'libcopi_rust.so'
 import { ComicCardData } from "./ComicCard"
 import { ComicCardList } from "./ComicCardList"
+import { listComicViewLogs } from 'native'
 
 @Component
 @Entry
@@ -35,7 +35,7 @@ class HistoryListData extends ComicListData {
   }
 
   listComicViewLogs(offset: number, limit: number): Promise<DataExplore> {
-    return rust.listComicViewLogs(offset, limit).then(rustResult => {
+    return listComicViewLogs(offset, limit).then(rustResult => {
       const a: DataExplore = {
         offset: rustResult.offset,
         limit: rustResult.limit,

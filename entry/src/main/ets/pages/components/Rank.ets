@@ -1,5 +1,5 @@
 import { ComicListData, DataExplore } from "./ComicListData"
-import rust, { UiComicInExplore, UiTags } from 'libcopi_rust.so'
+import { recommends, rank as nativeRank } from 'native'
 import { ComicCardList } from "./ComicCardList"
 
 @Component
@@ -63,7 +63,7 @@ export struct Rank {
 
 class RecommendsListData extends ComicListData {
   constructor() {
-    super((offset, limit) => rust.recommends(
+    super((offset, limit) => recommends(
       offset,
       limit,
     ));
@@ -78,7 +78,7 @@ class RankListData extends ComicListData {
   }
 
   rankLoad(offset: number, limit: number, rank: string): Promise<DataExplore> {
-    return rust.rank(rank, offset, limit).then(rankResult => {
+    return nativeRank(rank, offset, limit).then(rankResult => {
       const a: DataExplore = {
         offset: rankResult.offset,
         limit: rankResult.limit,

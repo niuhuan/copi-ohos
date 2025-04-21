@@ -1,12 +1,14 @@
-import rust, {
+import {
   ChapterImage,
   Comic,
   UiChapterData,
   UiComicChapter,
   UiComicData,
   UiComicInExplore,
-  UiComicQuery
-} from "libcopi_rust.so"
+  UiComicQuery,
+  comicChapterData,
+  viewChapterPage,
+} from "native"
 import { CachedImage } from "./components/CachedImage"
 import { Error } from "./components/Error"
 import { Loading } from "./components/Loading"
@@ -38,11 +40,11 @@ export struct ComicReader {
     const height = avoidArea.topRect.height;
     this.toolBarHeight = height
     try {
-      this.data = await rust.comicChapterData(
+      this.data = await comicChapterData(
         this.param!.exploreComic.pathWord,
         this.param!.chapter.uuid,
       )
-      await rust.viewChapterPage(
+      await viewChapterPage(
         this.param!.comicData.comic.pathWord,
         this.param!.chapter.uuid,
         this.param!.chapter.name,

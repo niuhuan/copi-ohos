@@ -1,13 +1,19 @@
 import router from '@ohos.router';
-import rust, {
+import {
   UiChapterData,
   UiComicChapter,
   UiComicData,
   UiComicInExplore,
   UiComicQuery,
   UiPageComicChapter,
-  UiViewLog
-} from 'libcopi_rust.so'
+  UiViewLog,
+  comicQuery,
+  comic,
+  comicChapters,
+  findComicViewLog,
+  Group,
+  viewComicInfo,
+} from 'native'
 import { ComicReader, ComicReaderParam } from './ComicReader';
 import { ComicCard } from './components/ComicCard';
 import { Error } from './components/Error';
@@ -30,7 +36,7 @@ export struct ComicInfo {
 
   async reloadViewLog() {
     if (this.comicData != null) {
-      this.viewLog = await rust.findComicViewLog(this.comicData.comic.pathWord);
+      this.viewLog = await findComicViewLog(this.comicData.comic.pathWord);
     }
   }
 
@@ -51,8 +57,8 @@ export struct ComicInfo {
   async init() {
     this.comicLoadingState = 0
     try {
-      this.comicQuery = await rust.comicQuery(this.exploreComic!.pathWord)
-      this.comicData = await rust.comic(this.exploreComic!.pathWord);
+      this.comicQuery = await comicQuery(this.exploreComic!.pathWord)
+      this.comicData = await comic(this.exploreComic!.pathWord);
       console.error(`GROUPS : ${this.comicData.groups[0].pathWord}`)
       for (let i = 0; i < this.comicData.groups.length; i++) {
         let group = this.comicData!.groups[i];
@@ -60,7 +66,7 @@ export struct ComicInfo {
         const limit = 100
         let offset = 0
         while (true) {
-          let cc = await rust.comicChapters(this.comicData.comic.pathWord, group.pathWord, limit, offset)
+          let cc = await comicChapters(this.comicData.comic.pathWord, group.pathWord, limit, offset)
           cl = cl.concat(cc.list)
           offset += limit
           if (cc.limit + cc.offset >= cc.total) {
@@ -69,8 +75,8 @@ export struct ComicInfo {
         }
         this.chapterDataMap[group.pathWord] = cl
       }
-      this.viewLog = await rust.findComicViewLog(this.comicData.comic.pathWord);
-      await rust.viewComicInfo(
+      this.viewLog = await findComicViewLog(this.comicData.comic.pathWord);
+      await viewComicInfo(
         this.comicData.comic.pathWord,
         this.comicData.comic.name,
         this.comicData.comic.author,
@@ -132,7 +138,7 @@ export struct ComicInfo {
         }
       }
 
-      ForEach(comicData.groups, (group: rust.Group, groupIdx) => {
+      ForEach(comicData.groups, (group: Group, groupIdx) => {
         ListItem().margin({ top: 20 })
         if (group.pathWord != 'default')
         ListItem() {

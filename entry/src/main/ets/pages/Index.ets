@@ -4,7 +4,7 @@ import router from '@ohos.router';
 @Entry
 @Component
 struct Index {
-  @State message: string = 'Hello World';
+  @State message: string = 'Loading';
 
   aboutToAppear(): void {
     this.init()

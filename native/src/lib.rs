@@ -15,7 +15,8 @@ mod exports;
 mod udto;
 mod utils;
 
-const API_URL: &str = "aHR0cHM6Ly9hcGkubWFuZ2Fjb3B5LmNvbQ==";
+const API_URL: &str = "aHR0cHM6Ly93d3cuY29weS1tYW5nYS5jb20=";
+// const API_URL: &str = "aHR0cHM6Ly9hcGkubWFuZ2Fjb3B5LmNvbQ==";
 // const API_URL_ORIGIN: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
 
 fn api_url() -> String {

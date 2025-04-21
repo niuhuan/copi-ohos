@@ -1,5 +1,4 @@
-import { UiLoginState } from 'libcopi_rust.so'
-import rust from 'libcopi_rust.so'
+import { UiLoginState, initLoginState } from 'native'
 
 class Context {
   private _loginEvent: Array<() => void> = []
@@ -25,7 +24,7 @@ class Context {
   }
 
   public async login() {
-    context.loginState = await rust.initLoginState();
+    context.loginState = await initLoginState();
     this._loginEvent.forEach(fn => fn())
   }
 

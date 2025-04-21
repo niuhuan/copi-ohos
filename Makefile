@@ -1,8 +1,17 @@
+Default: BuildNative OhpmInstall
 
-TestRust: BuildTest CopyRust
+all: Default BuildHap
 
-BuildTest:
-	cd copi_rust && ohrs build --release
+Clean: CleanNative
 
-CopyRust:
-	rsync -av --exclude oh-package.json5  copi_rust/dist/ entry/libs/
+OhpmInstall:
+	ohpm install
+
+BuildNative:
+	$(MAKE) -C native
+
+CleanNative:
+	$(MAKE) -C native Clean
+
+BuildHap:
+	hvigorw assembleHap --mode module -p product=default -p buildMode=release --no-daemon

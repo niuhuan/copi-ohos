@@ -1,6 +1,5 @@
-import rust from 'libcopi_rust.so'
+import { cacheImage } from 'native'
 import { url } from '@kit.ArkTS';
-import { fileIo } from '@kit.CoreFileKit';
 import { image } from '@kit.ImageKit';
 import { materialIconData, materialIconsFontFamily } from './MaterialIcons';
 
@@ -29,7 +28,7 @@ export struct CachedImage {
   async init() {
     try {
       console.error(`load image : ${this.source}`)
-      let ci = await rust.cacheImage(
+      let ci = await cacheImage(
         this.cacheKey(this.source),
         this.source,
         this.useful ?? '',
@@ -67,7 +66,7 @@ export struct CachedImage {
         .objectFit(ImageFit.Cover)
         .renderFit(RenderFit.CENTER)
     } else {
-      Flex({justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center}) {
+      Flex({ justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
         if (this.state == 0) {
           Text(materialIconData('download'))
             .fontFamily(materialIconsFontFamily)

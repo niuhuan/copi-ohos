@@ -1,0 +1,42 @@
+name: Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  build_release_assets:
+    name: build_release_assets
+    runs-on: ubuntu-latest
+    container: ghcr.io/sanchuanhehe/harmony-next-pipeline-docker/harmonyos-ci-image:latest
+    steps:
+      - name: install dependencies
+        run: |
+          apt update
+          apt install -y jq curl xz-utils build-essential rsync
+      - name: Install rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2024-12-02
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        run: |
+          export PATH=/opt/harmonyos-tools/command-line-tools/ohpm/bin:$PATH
+          export PATH=/opt/harmonyos-tools/command-line-tools/bin:$PATH
+          export OHOS_NDK_HOME=/opt/harmonyos-tools/command-line-tools/sdk/default/openharmony
+          
+          export OHOS_BASE_SDK_HOME=$OHOS_NDK_HOME
+          export OHOS_SDK_NATIVE=$OHOS_NDK_HOME
+          
+          export HOS_SDK_HOME=$OHOS_NDK_HOME
+          export OHOS_SDK_HOME=$OHOS_NDK_HOME
+          
+          cargo install -f --git https://github.com/ohos-rs/ohos-rs.git --branch fix-cli
+          rustup target add aarch64-unknown-linux-ohos
+          make all
+      - name: upload hap
+        uses: actions/upload-artifact@v4
+        with:
+          path: entry/build/default/outputs/default/app/entry-default.hap
+          name: entry-default.hap

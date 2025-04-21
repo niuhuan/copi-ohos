@@ -10,9 +10,3 @@
 /.clang-tidy
 **/.test
 /.appanalyzer
-
-target/
-dist/
-*.so
-entry/libs/index.d.ts
-Thumbs.db

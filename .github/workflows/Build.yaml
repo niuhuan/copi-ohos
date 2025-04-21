@@ -32,7 +32,7 @@ jobs:
           export HOS_SDK_HOME=$OHOS_NDK_HOME
           export OHOS_SDK_HOME=$OHOS_NDK_HOME
           
-          cargo install -f --git https://github.com/ohos-rs/ohos-rs.git --branch fix-cli
+          cargo install -f --git https://github.com/ohos-rs/ohos-rs.git
           rustup target add aarch64-unknown-linux-ohos
           make all
       - name: upload hap

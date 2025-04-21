@@ -38,5 +38,6 @@ jobs:
       - name: upload hap
         uses: actions/upload-artifact@v4
         with:
-          path: entry/build/default/outputs/default/app/entry-default.hap
+          path: entry/build/default/outputs/default/entry-default-unsigned.hap
           name: entry-default.hap
+

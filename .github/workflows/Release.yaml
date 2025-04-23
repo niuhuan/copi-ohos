@@ -106,4 +106,5 @@ jobs:
           echo "Uploading package to release..."
           find . -name "*.hap"
           ls -l entry/build/default/outputs/default/entry-default-unsigned.hap
+	        git config --global --add safe.directory $GITHUB_WORKSPACE
           gh release upload ${{ github.event.inputs.version }} "entry/build/default/outputs/default/entry-default-unsigned.hap#entry-default-unsigned-${{ github.event.inputs.version }}.hap" --clobber

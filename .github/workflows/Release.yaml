@@ -32,8 +32,11 @@ jobs:
             echo "upload_required=true" >> $GITHUB_OUTPUT
           else
             echo "Release ${{ github.event.inputs.version }} already exists."
+            gh release view ${{ github.event.inputs.version }} --json assets > release_assets.json
+            echo release_assets.json :
+            cat release_assets.json
             ASSET_NAME="entry-default-unsigned-${{ github.event.inputs.version }}.hap"
-            ASSET_EXISTS=$(gh release view ${{ github.event.inputs.version }} --json assets -q ".assets[].name | select(. == \"$ASSET_NAME\")" || echo "NOT_FOUND")
+            ASSET_EXISTS=$(gh release view ${{ github.event.inputs.version }} --json assets -q ".assets[].name" | grep -w "$ASSET_NAME" || echo "NOT_FOUND")
             if [ "$ASSET_EXISTS" == "NOT_FOUND" ]; then
               echo "Asset $ASSET_NAME does not exist. Upload is required."
               echo "upload_required=true" >> $GITHUB_OUTPUT

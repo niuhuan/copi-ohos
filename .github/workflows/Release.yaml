@@ -104,4 +104,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Uploading package to release..."
+          find . -name "*.hap"
+          ls -l entry/build/default/outputs/default/entry-default-unsigned.hap
           gh release upload ${{ github.event.inputs.version }} "entry/build/default/outputs/default/entry-default-unsigned.hap:entry-default-unsigned-${{ github.event.inputs.version }}.hap" --clobber

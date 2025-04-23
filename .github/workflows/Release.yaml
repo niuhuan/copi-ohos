@@ -14,6 +14,11 @@ jobs:
     outputs:
       upload_required: ${{ steps.check-release.outputs.upload_required }} # 输出是否需要上传 Jar 包
     steps:
+
+      # 检出代码库
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       # 检查 Release 是否存在
       - name: Check and create release
         id: check-release

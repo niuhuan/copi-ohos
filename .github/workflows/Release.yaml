@@ -9,7 +9,7 @@ on:
 
 jobs:
   # Job 1: 检查 Release 是否存在
-  check-release:
+  check-and-create-release:
     runs-on: ubuntu-latest
     outputs:
       upload_required: ${{ steps.check-release.outputs.upload_required }} # 输出是否需要上传 Jar 包
@@ -42,10 +42,14 @@ jobs:
               echo "upload_required=false" >> $GITHUB_OUTPUT
             fi
           fi
+          echo GITHUB_OUTPUT :
+          cat $GITHUB_OUTPUT
+
+
   # Job 2: 编译并上传 Hap 文件
   build-and-upload:
     needs: check-release # 依赖于 Job 1
-    if: needs.check-release.outputs.upload_required == 'true' # 只有当 Release 中的 asset 不存在时才执行
+    if: needs.check-and-create-release.outputs.upload_required == 'true' # 只有当 Release 中的 asset 不存在时才执行
     runs-on: ubuntu-latest
     container: ghcr.io/sanchuanhehe/harmony-next-pipeline-docker/harmonyos-ci-image:latest
     steps:

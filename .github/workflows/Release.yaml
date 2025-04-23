@@ -45,7 +45,7 @@ jobs:
   # Job 2: 编译并上传 Hap 文件
   build-and-upload:
     needs: check-release # 依赖于 Job 1
-    if: needs.check-and-create-release.outputs.upload_required == 'true' # 只有当 Release 中的 asset 不存在时才执行
+    if: needs.check-release.outputs.upload_required == 'true' # 只有当 Release 中的 asset 不存在时才执行
     runs-on: ubuntu-latest
     container: ghcr.io/sanchuanhehe/harmony-next-pipeline-docker/harmonyos-ci-image:latest
     steps:

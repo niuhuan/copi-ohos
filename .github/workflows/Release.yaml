@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.0.0)'
+        required: true
+
+jobs:
+  # Job 1: 检查 Release 是否存在
+  check-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_required: ${{ steps.check-release.outputs.upload_required }} # 输出是否需要上传 Jar 包
+    steps:
+      # 检查 Release 是否存在
+      - name: Check and create release
+        id: check-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RELEASE=$(gh release view ${{ github.event.inputs.version }} --json id -q .id || echo "NOT_FOUND")
+          if [ "$RELEASE" == "NOT_FOUND" ]; then
+            echo "Release does not exist. Creating release ${{ github.event.inputs.version }}."
+            gh release create ${{ github.event.inputs.version }} --notes "Release ${{ github.event.inputs.version }}" --target ${{ github.sha }}
+            echo "upload_required=true" >> $GITHUB_ENV
+            echo "::set-output name=upload_required::true"
+          else
+            echo "Release ${{ github.event.inputs.version }} already exists."
+            ASSET_NAME="entry-default-unsigned-${{ github.event.inputs.version }}.hap"
+            ASSET_EXISTS=$(gh release view ${{ github.event.inputs.version }} --json assets -q ".assets[].name | select(. == \"$ASSET_NAME\")" || echo "NOT_FOUND")
+            if [ "$ASSET_EXISTS" == "NOT_FOUND" ]; then
+              echo "Asset $ASSET_NAME does not exist. Upload is required."
+              echo "upload_required=true" >> $GITHUB_ENV
+              echo "::set-output name=upload_required::true"
+            else
+              echo "Asset $ASSET_NAME already exists. No upload is required."
+              echo "upload_required=false" >> $GITHUB_ENV
+              echo "::set-output name=upload_required::false"
+            fi
+          fi
+  # Job 2: 编译并上传 Hap 文件
+  build-and-upload:
+    needs: check-release # 依赖于 Job 1
+    if: needs.check-release.outputs.upload_required == 'false' # 只有当 Release 不存在时才执行
+    runs-on: ubuntu-latest
+    container: ghcr.io/sanchuanhehe/harmony-next-pipeline-docker/harmonyos-ci-image:latest
+    steps:
+
+      # 安装依赖 用于编译
+      - name: install dependencies
+        run: |
+          apt update
+          apt install -y jq curl xz-utils build-essential rsync gh
+
+      # 安装 rust 工具链
+      - name: Install rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2024-12-02
+
+      # 检出代码库
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 构建 Hap 文件
+      - name: Build Hap file
+        run: |
+          export PATH=/opt/harmonyos-tools/command-line-tools/ohpm/bin:$PATH
+          export PATH=/opt/harmonyos-tools/command-line-tools/bin:$PATH
+          export OHOS_NDK_HOME=/opt/harmonyos-tools/command-line-tools/sdk/default/openharmony
+          
+          export OHOS_BASE_SDK_HOME=$OHOS_NDK_HOME
+          export OHOS_SDK_NATIVE=$OHOS_NDK_HOME
+          
+          export HOS_SDK_HOME=$OHOS_NDK_HOME
+          export OHOS_SDK_HOME=$OHOS_NDK_HOME
+          
+          cargo install -f --git https://github.com/ohos-rs/ohos-rs.git
+          rustup target add aarch64-unknown-linux-ohos
+          make all
+
+      # 上传 Hap 文件到 Release
+      - name: Upload Hap to release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Uploading package to release..."
+          gh release upload ${{ github.event.inputs.version }} "entry/build/default/outputs/default/entry-default-unsigned.hap:entry-default-unsigned-${{ github.event.inputs.version }}.hap" --clobber

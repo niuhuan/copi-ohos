@@ -2,6 +2,7 @@ import { ComicListData, DataExplore } from "./ComicListData"
 import { ComicCardData } from "./ComicCard"
 import { ComicCardList } from "./ComicCardList"
 import { listComicViewLogs } from 'native'
+import { Settings } from "./Settings"
 
 @Component
 @Entry
@@ -20,7 +21,8 @@ export struct User {
       }.tabBar('历史记录')
 
       TabContent() {
-      }.tabBar('研发中')
+        Settings()
+      }.tabBar('设置')
     }
     .width('100%').height('100%')
   }

@@ -1,5 +1,6 @@
 pub mod api;
 use crate::database::init_database;
+use crate::database::properties::property;
 use base64::Engine;
 use copy_client::Client;
 use lazy_static::lazy_static;
@@ -15,9 +16,8 @@ mod exports;
 mod udto;
 mod utils;
 
-const API_URL: &str = "aHR0cHM6Ly93d3cuY29weS1tYW5nYS5jb20=";
-// const API_URL: &str = "aHR0cHM6Ly9hcGkubWFuZ2Fjb3B5LmNvbQ==";
-// const API_URL_ORIGIN: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
+const OLD_API_URL: &str = "aHR0cHM6Ly93d3cuY29weS1tYW5nYS5jb20=";
+const API_URL: &str = "aHR0cHM6Ly93d3cuY29weTIwLmNvbQ==";
 
 fn api_url() -> String {
     String::from_utf8(base64::prelude::BASE64_STANDARD.decode(API_URL).unwrap()).unwrap()
@@ -63,6 +63,8 @@ pub async fn init_root(path: &str) {
     create_dir_if_not_exists(DATABASE_DIR.get().unwrap());
     create_dir_if_not_exists(DOWNLOAD_DIR.get().unwrap());
     init_database().await;
+    reset_api().await;
+    load_api().await;
     *downloading::DOWNLOAD_AND_EXPORT_TO.lock().await =
         database::properties::property::load_property("download_and_export_to".to_owned())
             .await
@@ -104,3 +106,37 @@ fn init() {
         .unwrap();
     napi_ohos::bindgen_prelude::create_custom_tokio_runtime(rt);
 }
+
+async fn reset_api() {
+    let old_api = property::load_property("old_api".to_owned()).await.unwrap();
+    let api = property::load_property("api".to_owned()).await.unwrap();
+    if api.is_empty() {
+        return;
+    }
+    let replace_from = String::from_utf8(
+        base64::prelude::BASE64_STANDARD
+            .decode(OLD_API_URL)
+            .unwrap(),
+    )
+    .unwrap();
+    if !replace_from.eq(&old_api) && replace_from.eq(&api) {
+        let replace_to =
+            String::from_utf8(base64::prelude::BASE64_STANDARD.decode(API_URL).unwrap()).unwrap();
+        property::save_property("old_api".to_owned(), replace_from)
+            .await
+            .unwrap();
+        property::save_property("api".to_owned(), replace_to)
+            .await
+            .unwrap();
+    }
+}
+
+async fn load_api() {
+    let api = property::load_property("api".to_owned()).await.unwrap();
+    if api.is_empty() {
+        return;
+    }
+    CLIENT.set_api_host(api).await;
+}
+
+

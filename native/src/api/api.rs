@@ -81,6 +81,21 @@ pub async fn set_proxy(proxy: String) -> Result<()> {
 }
 
 #[napi]
+pub async fn get_api_host() -> Result<String> {
+    Ok((*CLIENT.api_host_string().await).clone())
+}
+
+#[napi]
+pub async fn set_api_host(api: String) -> Result<()> {
+    block_on(async {
+        CLIENT.set_api_host(api.clone()).await;
+        property::save_property("api".to_owned(), api).await?;
+        Ok(())
+    })
+    .await
+}
+
+#[napi]
 pub async fn init_login_state() -> Result<UiLoginState> {
     block_on(async {
         let token = property::load_property("token".to_owned()).await?;

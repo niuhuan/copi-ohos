@@ -1,13 +1,16 @@
 import { getApiHost, setApiHost } from "native";
 import { colors } from "./Context";
 import { materialIconData, materialIconsFontFamily } from "./MaterialIcons";
+import { VersionStore, VersionStoreModel, VersionStoreActions } from "./VersionStore";
+import { hilog } from "@kit.PerformanceAnalysisKit";
 
 @Entry
-@Component
+@ComponentV2
 export struct Settings {
-  @State api: string = "";
-  @State apiIsEditing: boolean = false;
-  @State apiTemp: string = "";
+  @Local versionState: VersionStoreModel = VersionStore.getState();
+  @Local api: string = "";
+  @Local apiIsEditing: boolean = false;
+  @Local apiTemp: string = "";
 
   async initState() {
     this.api = await getApiHost();
@@ -34,7 +37,7 @@ export struct Settings {
       }
       .width('100%')
       .height(20)
-      .margin({top: 16})
+      .margin({ top: 16 })
       .padding({ left: 16, right: 16 })
       .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
@@ -52,7 +55,12 @@ export struct Settings {
             .fontWeight(FontWeight.Medium)
         }
         .width('100%')
-        .padding({ top: 16, bottom: 16, left: 16, right: 16 })
+        .padding({
+          top: 16,
+          bottom: 16,
+          left: 16,
+          right: 16
+        })
 
         if (this.apiIsEditing) {
           // 编辑模式
@@ -64,7 +72,7 @@ export struct Settings {
               .onChange((value: string) => {
                 this.apiTemp = value;
               })
-            
+
             Row() {
               Button('取消')
                 .backgroundColor('#F5F5F5')
@@ -75,7 +83,7 @@ export struct Settings {
                 })
                 .margin({ right: 12 })
                 .flexGrow(1)
-              
+
               Button('保存')
                 .backgroundColor(colors.authorColor)
                 .fontColor(Color.White)
@@ -96,7 +104,7 @@ export struct Settings {
               .fontSize(14)
               .fontColor('#666666')
               .flexGrow(1)
-            
+
             Button() {
               Row() {
                 Text(materialIconData('edit'))
@@ -118,6 +126,79 @@ export struct Settings {
           .width('100%')
           .padding({ left: 16, right: 16, bottom: 16 })
         }
+      }
+      .width('100%')
+      .backgroundColor(Color.White)
+      .borderRadius(8)
+      .margin({ top: 16, left: 16, right: 16 })
+      .shadow({
+        radius: 4,
+        color: '#0000000A',
+        offsetY: 2
+      })
+
+      // 版本信息卡片
+      Column() {
+        Row() {
+          Text(materialIconData('info'))
+            .fontFamily(materialIconsFontFamily)
+            .fontSize(24)
+            .fontColor(colors.authorColor)
+            .margin({ right: 12 })
+          Text("版本信息")
+            .fontSize(16)
+            .fontWeight(FontWeight.Medium)
+        }
+        .width('100%')
+        .padding({
+          top: 16,
+          bottom: 16,
+          left: 16,
+          right: 16
+        })
+
+        Column() {
+          Row() {
+            Text("当前版本")
+              .fontSize(14)
+              .fontColor('#666666')
+              .flexGrow(1)
+            Text(this.versionState.currentVersion)
+              .fontSize(14)
+              .fontColor('#666666')
+          }
+          .width('100%')
+          .padding({ bottom: 12 })
+
+          Row() {
+            Text("最新版本")
+              .fontSize(14)
+              .fontColor('#666666')
+              .flexGrow(1)
+            if (this.versionState.loading) {
+              LoadingProgress()
+                .width(16)
+                .height(16)
+                .color(colors.authorColor)
+            } else {
+              Row() {
+                Text(this.versionState.newVersion)
+                  .fontSize(14)
+                  .fontColor(this.versionState.compare > 0 ? colors.authorColor : '#666666')
+                if (this.versionState.compare > 0) {
+                  Badge({
+                    count: 1,
+                    position: BadgePosition.RightTop,
+                    style: { color: colors.authorColor, fontSize: 12, badgeSize: 16 }
+                  })
+                }
+              }
+            }
+          }
+          .width('100%')
+          .padding({ bottom: 16 })
+        }
+        .padding({ left: 16, right: 16, bottom: 16 })
       }
       .width('100%')
       .backgroundColor(Color.White)

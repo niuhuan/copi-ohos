@@ -1,4 +1,4 @@
-import { colors, context } from './components/Context'
+import { colors } from './components/Context'
 import { ComicInfo } from './ComicInfo'
 import { ComicReader } from './ComicReader'
 import { Discovery } from './components/Discovery'
@@ -6,24 +6,23 @@ import { materialIconData, materialIconsFontFamily } from './components/Material
 import { navStack } from './components/Nav'
 import { Rank } from './components/Rank'
 import { User } from './components/User'
+import { VersionStore, VersionStoreActions, VersionStoreModel, setUiContext } from './components/VersionStore'
+import promptAction from '@ohos.promptAction';
+import { hilog } from '@kit.PerformanceAnalysisKit'
 
 @Entry
-@Component
+@ComponentV2
 struct Home {
-  @State currentIndex: number = 1
-  @State flushPage: number = 1
+  @Local currentIndex: number = 1
+  @Local versionState: VersionStoreModel = VersionStore.getState();
   private tabController: TabsController = new TabsController()
 
   aboutToAppear(): void {
-    context.addLoginEvent(this.onLoginChange)
+    setUiContext(this.getUIContext());
+    VersionStore.dispatch(VersionStoreActions.refresh);
   }
 
   aboutToDisappear(): void {
-    context.removeLoginEvent(this.onLoginChange)
-  }
-
-  onLoginChange(): void {
-    this.flushPage *= -1
   }
 
   build() {

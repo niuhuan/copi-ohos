@@ -1,4 +1,3 @@
-import { context } from './components/Context'
 import router from '@ohos.router';
 
 @Entry
@@ -11,7 +10,6 @@ struct Index {
   }
 
   async init() {
-    await context.login()
     router.replaceUrl({
       url: 'pages/Home',
     })

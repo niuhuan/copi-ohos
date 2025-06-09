@@ -1,11 +1,12 @@
 pub use super::types::*;
-use super::Comment;
+use super::{Comment, Roast};
 use crate::copy_client::{
     ChapterData, CollectedComic, ComicChapter, ComicData, ComicInExplore, ComicInSearch,
     ComicQuery, LoginResult, MemberInfo, Page, RankItem, RecommendItem, RegisterResult, Response,
     Tags,
 };
 use base64::Engine;
+use chrono::Datelike;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -64,11 +65,11 @@ impl Client {
                 );
                 obj.insert(
                     "referer".to_string(),
-                    serde_json::Value::String("com.copymanga.app-2.2.0".to_string()),
+                    serde_json::Value::String("com.copymanga.app-2.3.0".to_string()),
                 );
                 obj.insert(
                     "userAgent".to_string(),
-                    serde_json::Value::String("COPY/2.2.0".to_string()),
+                    serde_json::Value::String("COPY/2.3.0".to_string()),
                 );
                 obj.insert(
                     "source".to_string(),
@@ -80,7 +81,7 @@ impl Client {
                 );
                 obj.insert(
                     "version".to_string(),
-                    serde_json::Value::String("2.2.0".to_string()),
+                    serde_json::Value::String("2.3.0".to_string()),
                 );
                 obj.insert(
                     "region".to_string(),
@@ -126,17 +127,18 @@ impl Client {
                 "authorization",
                 format!("Token {}", self.get_token().await.as_str()),
             )
-            .header("referer", "com.copymanga.app-2.2.0")
-            .header("user-agent", "COPY/2.2.0")
+            .header("referer", "com.copymanga.app-2.3.0")
+            .header("user-agent", "COPY/2.3.0")
             .header("source", "copyApp")
             .header("webp", "1")
-            .header("version", "2.2.0")
+            .header("version", "2.3.0")
             .header("region", "1")
             .header("platform", "3")
             .header("accept", "application/json")
             .header("device", "QSR1.210802.001")
             .header("umstring", "b4c89ca4104ea9a97750314d791520ac")
-            .header("deviceinfo", "Android SDK built for arm64-emulator64_arm64");
+            .header("deviceinfo", "Android SDK built for arm64-emu64a")
+            .header("dt", Self::dt());
         let request = match method {
             reqwest::Method::GET => request.query(&obj),
             _ => request.form(&obj),
@@ -153,7 +155,7 @@ impl Client {
             if value.len() == 1 {
                 if let Some(serde_json::Value::String(detal)) = value.get("detail") {
                     return Err(Error::message(detal.to_string()));
-               }
+                }
             }
         }
         let response: Response = serde_json::from_str(text.as_str())?;
@@ -161,6 +163,11 @@ impl Client {
             return Err(Error::message(response.message));
         }
         Ok(serde_json::from_value(response.results)?)
+    }
+
+    fn dt() -> String {
+        let now = chrono::Local::now();
+        format!("{}.{}.{}", now.year(), now.month(), now.day(),)
     }
 
     pub async fn register(&self, username: &str, password: &str) -> Result<RegisterResult> {
@@ -329,6 +336,48 @@ impl Client {
         .await
     }
 
+    pub async fn explore_by_author_name(
+        &self,
+        author_name: &str,
+        ordering: Option<&str>,
+        offset: u64,
+        limit: u64,
+    ) -> Result<Page<ComicInExplore>> {
+        let mut params = serde_json::json!({
+            "offset": offset,
+            "limit": limit,
+            "q": author_name,
+            "free_type": 1,
+            "platform": 3,
+        });
+        if let Some(ordering) = ordering {
+            params["ordering"] = serde_json::json!(ordering);
+        }
+        self.request(reqwest::Method::GET, "/api/v3/comics", params)
+            .await
+    }
+
+    pub async fn explore_by_author(
+        &self,
+        author: &str,
+        ordering: Option<&str>,
+        offset: u64,
+        limit: u64,
+    ) -> Result<Page<ComicInExplore>> {
+        let mut params = serde_json::json!({
+            "offset": offset,
+            "limit": limit,
+            "author": author,
+            "free_type": 1,
+            "platform": 3,
+        });
+        if let Some(ordering) = ordering {
+            params["ordering"] = serde_json::json!(ordering);
+        }
+        self.request(reqwest::Method::GET, "/api/v3/comics", params)
+            .await
+    }
+
     pub async fn explore(
         &self,
         ordering: Option<&str>,
@@ -395,6 +444,20 @@ impl Client {
         let agent = agent_lock.clone();
         drop(agent_lock);
         Ok(agent.get(url).send().await?.bytes().await?)
+    }
+
+    pub async fn roasts(&self, chapter_id: &str) -> Result<Page<Roast>> {
+        self.request(
+            reqwest::Method::GET,
+            "/api/v3/roasts",
+            serde_json::json!({
+                "chapter_id": chapter_id,
+                "limit": 10,
+                "offset": 0,
+                "platform": 3,
+            }),
+        )
+        .await
     }
 
     pub async fn comments(

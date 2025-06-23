@@ -24,10 +24,24 @@ export const loginStoreReducer: Reducer<LoginStoreModel> = (state: LoginStoreMod
   switch (action.type) {
     case LoginStoreActions.preLogin.type:
       return async () => {
+        if (state.loginInfo.state == -1) {
+          return
+        }
+        state.loginInfo = {
+          state: -1,
+          message: ""
+        };
         state.loginInfo = await initLoginState();
       }
     case LoginStoreActions.login.type:
       return async () => {
+        if (state.loginInfo.state == -1) {
+          return
+        }
+        state.loginInfo = {
+          state: -1,
+          message: ""
+        };
         let username = await loadProperty("username");
         let password = await loadProperty("password");
         state.loginInfo = await login(

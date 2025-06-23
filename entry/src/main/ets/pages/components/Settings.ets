@@ -4,7 +4,7 @@ import { materialIconData, materialIconsFontFamily } from "./MaterialIcons";
 import { VersionStore, VersionStoreModel, VersionStoreActions } from "./VersionStore";
 import { hilog } from "@kit.PerformanceAnalysisKit";
 import { loadProperty } from "native";
-import { LoginStore, LoginStoreModel } from "./LoginStorage";
+import { LoginStore, LoginStoreModel, LoginStoreActions } from "./LoginStorage";
 
 @Entry
 @ComponentV2
@@ -299,6 +299,51 @@ export struct Settings {
         }
         .width('100%')
         .padding({ top: 16, bottom: 16, left: 16, right: 16 })
+      }
+
+      // 登录状态
+      Row() {
+        Text("登录状态")
+          .fontSize(16)
+          .fontWeight(FontWeight.Medium)
+          .margin({ right: 12 })
+
+        if (this.loginStore.loginInfo.state === -1) {
+          Row() {
+            LoadingProgress().width(16).height(16).color(colors.authorColor)
+            Text("登录中...")
+              .fontSize(14)
+              .fontColor('#666666')
+              .margin({ left: 8 })
+          }
+        } else if (this.loginStore.loginInfo.state === 1) {
+          Text("登录成功")
+            .fontSize(14)
+            .fontColor(colors.authorColor)
+        } else if (this.loginStore.loginInfo.state === 0) {
+          Text("未登录")
+            .fontSize(14)
+            .fontColor('#666666')
+        } else {
+          Text(`登录失败: ${this.loginStore.loginInfo.message}`)
+            .fontSize(14)
+            .fontColor('#FF0000')
+        }
+      }
+      .width('100%')
+      .padding({ top: 16, bottom: 16, left: 16, right: 16 })
+
+      if (this.loginStore.loginInfo.state !== 1) {
+        Button('登录')
+          .width('100%')
+          .height(40)
+          .backgroundColor(this.loginStore.loginInfo.state === -1 ? '#E0E0E0' : colors.authorColor)
+          .fontColor(Color.White)
+          .enabled(this.loginStore.loginInfo.state !== -1)
+          .onClick(() => {
+            LoginStore.dispatch(LoginStoreActions.login);
+          })
+          .margin({ left: 16, right: 16, bottom: 16 })
       }
 
       // 版本信息卡片

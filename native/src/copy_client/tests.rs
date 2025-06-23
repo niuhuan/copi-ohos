@@ -1,6 +1,7 @@
 use super::client::Client;
 use anyhow::Result;
 use base64::Engine;
+use reqwest::Method;
 use serde_json::json;
 
 const API_URL: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
@@ -69,17 +70,6 @@ async fn test_collect() -> Result<()> {
     client.set_token("token").await;
     let value = client
         .collect("9581bff2-3892-11ec-8e8b-024352452ce0", true)
-        .await?;
-    println!("{}", serde_json::to_string(&value).unwrap());
-    Ok(())
-}
-
-#[tokio::test]
-async fn test_collected_comics() -> Result<()> {
-    let client = client();
-    client.set_token("token").await;
-    let value = client
-        .collected_comics(1, 0, 21, "-datetime_modifier")
         .await?;
     println!("{}", serde_json::to_string(&value).unwrap());
     Ok(())

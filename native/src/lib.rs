@@ -65,6 +65,7 @@ pub async fn init_root(path: &str) {
     init_database().await;
     reset_api().await;
     load_api().await;
+    init_device().await;
     *downloading::DOWNLOAD_AND_EXPORT_TO.lock().await =
         database::properties::property::load_property("download_and_export_to".to_owned())
             .await
@@ -138,5 +139,24 @@ async fn load_api() {
     }
     CLIENT.set_api_host(api).await;
 }
+
+async fn init_device() {
+    let mut device = property::load_property("device".to_owned()).await.unwrap();
+    if device.is_empty() {
+        device = copy_client::random_device();
+        property::save_property("device".to_owned(), device.clone())
+            .await
+            .unwrap();
+    }
+    let mut device_info = property::load_property("device_info".to_owned()).await.unwrap();
+    if device_info.is_empty() {
+        device_info = copy_client::random_device();
+        property::save_property("device_info".to_owned(), device_info.clone())
+            .await
+            .unwrap();
+    }
+    CLIENT.set_device(device, device_info).await;
+}
+
 
 

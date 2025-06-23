@@ -36,6 +36,7 @@ base64 = "0.22.1"
 itertools = "0.13.0"
 url = { version = "2.5.4", features = ["serde"] }
 num-iter = "0.1.45"
+rand = "0.9.1"
 
 [build-dependencies]
 napi-build-ohos = { version = "1.0.1" }

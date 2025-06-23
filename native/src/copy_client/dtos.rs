@@ -437,3 +437,31 @@ pub struct Roast {
     pub user_avatar: String,
     pub comment: String,
 }
+
+#[napi(object)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct BrowseComic {
+    pub id: i64,
+    pub last_chapter_id: String,
+    pub last_chapter_name: String,
+    pub comic: BrowseComicComic,
+}
+
+#[napi(object)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct BrowseComicComic {
+    pub uuid: String,
+    pub b_display: bool,
+    pub name: String,
+    pub path_word: String,
+    pub females: Vec<SexualOrientation>,
+    pub males: Vec<SexualOrientation>,
+    pub author: Vec<Author>,
+    pub theme: Vec<Tag>,
+    pub cover: String,
+    pub status: i64,
+    pub popular: i64,
+    pub datetime_updated: String,
+    pub last_chapter_id: String,
+    pub last_chapter_name: String,
+}

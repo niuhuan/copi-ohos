@@ -3,17 +3,24 @@ import { colors } from "./Context";
 import { materialIconData, materialIconsFontFamily } from "./MaterialIcons";
 import { VersionStore, VersionStoreModel, VersionStoreActions } from "./VersionStore";
 import { hilog } from "@kit.PerformanceAnalysisKit";
+import { loadProperty } from "native";
+import { LoginStore, LoginStoreModel } from "./LoginStorage";
 
 @Entry
 @ComponentV2
 export struct Settings {
   @Local versionState: VersionStoreModel = VersionStore.getState();
+  @Local loginStore: LoginStoreModel = LoginStore.getState();
   @Local api: string = "";
   @Local apiIsEditing: boolean = false;
   @Local apiTemp: string = "";
+  @Local username: string = "";
+  @Local password: string = "";
 
   async initState() {
     this.api = await getApiHost();
+    this.username = await loadProperty("username");
+    this.password = await loadProperty("password");
   }
 
   async confirmApiSet(host: string) {

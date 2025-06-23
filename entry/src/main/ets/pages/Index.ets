@@ -1,4 +1,5 @@
 import router from '@ohos.router';
+import { LoginStore, LoginStoreActions } from './components/LoginStorage';
 
 @Entry
 @Component
@@ -10,6 +11,7 @@ struct Index {
   }
 
   async init() {
+    LoginStore.dispatch(LoginStoreActions.preLogin);
     router.replaceUrl({
       url: 'pages/Home',
     })
